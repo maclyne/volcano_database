@@ -1,20 +1,17 @@
 """Collects data from a column within a dataset
 
-    * get_column - searches through a data file and finds
-                   specific values relating to an inputted search
-                   parameter(s).
+    * get_column - searches through a data file and finds specific values
+                   relating to an inputted search parameter(s).
 
     * identify_column - Identifies the query and result columns of interest
                    if entered as an integer or a string and gives the index
                    values of those columns. """
+
 from array import array
-from operator import itemgetter
-import matplotlib
-import matplotlib.pylab as plt
 import sys
 from datetime import datetime
-matplotlib.use('Agg')
 
+#TODO: change output to list (not array) for single result column input
 
 def get_column(file_name, query_column, query_value, result_column=1):
 
@@ -56,55 +53,33 @@ def get_column(file_name, query_column, query_value, result_column=1):
 
     # separates header line, removes /n, and splits into its elements
     header = f.readline().rstrip().split(',')
-
+    
     # calls the column_index function to identify the query and result columns
     # based on either their integer or string value
-    column_index = identify_column(query_column, result_column, header)
-    # query column index
-    i = column_index[0]
-    # result column index
-    ii = column_index[1]
 
-    # sets Result output type based on number of inputted result columns
+    i = identify_column(query_column, header)
+        
+    ii=[]
     if type(result_column) is list:
-        # create Results list to add results to with multiple result columns
-        Output = []
+        for r_column in result_column:
+            column_index = identify_column(r_column, header)
+            ii.append(column_index)
     else:
-        # creates Result array to add results to with one result column
-        Output = array('i', [])
+        ii = identify_column(result_column, header)
+
+    # create Results list to add results to with multiple result columns
+    Output = []
 
     for line in f:
         A = line.rstrip().split(',')
         # checks if value in the query_column matches the inputted query_value
         if A[i] == query_value:
 
-            try:
-                # keeps track of date
-                curr_date = datetime.strptime(A[0], '%Y-%m-%d')
-                if last_date is not None:
-                    delta = curr_date - last_date
-                    # checks for skipped days and pads
-                    if delta.days > 1:
-                        for j in range(delta.days - 1):
-                            Output.append(Output[-1])
-                    # checks for out of order days
-                    elif delta.days < 0:
-                        raise ValueError
-                last_date = curr_date
-
-            # handles a lack of date column in data set
-            except ValueError:
-                try:
-                    delta.days < 0
-                    raise ValueError
-                except UnboundLocalError:
-                    last_date = None
-
             # appends value in the result columns to the outputted Result list
             if type(result_column) is list:
                 case = []
-                for column in result_column:
-                    case.append(A[int(column)])
+                for index in ii:
+                    case.append(A[index])
                 Output.append(case)
             # appends value in the result column to the outputted Result array
             else:
@@ -119,8 +94,9 @@ def get_column(file_name, query_column, query_value, result_column=1):
     return(Output)
     f.close()
 
-
-def identify_column(query_column, result_column, header):
+# TODO: update to allow multiple result columns input as strings 
+    
+def identify_column(query_column, header):
 
     """ Identifies the query and result columns of interest if entered as
         an integer or a string and gives the index values of those columns.
@@ -145,75 +121,33 @@ def identify_column(query_column, result_column, header):
     ii: integer
             Index value of the result column.
     """
-
-    # generates variable i to indicate the query column
-    i = 0
+    
+    index = 0
+    # checks if integer for column was inputted
+    # assumes counting starting at 0
     for column_header in header:
-        # checks if integer for column was inputted
-        # assumes counting starting at 1
         try:
             type(int(query_column)) == int
-            query_column = int(query_column)
+            column = int(query_column)
             # checks for array length exception
-            if query_column > len(header):
-                print("Searching for query column "
+            if column > (len(header) - 1):
+                print("Searching for result column "
                       + str(query_column)
                       + " but there are only "
                       + str(len(header)-1)
                       + " fields")
                 sys.exit(1)
             else:
-                i = query_column - 1
+                index = column
         except ValueError:
             if query_column == column_header:
                 break
             else:
-                i += 1
+                index += 1
                 # checks for str(query_column) match exception
-                if i > (len(header) - 1):
-                    print("Searching for query column "
+                if index > (len(header)-1):
+                    print("Searching for result column "
                           + query_column
                           + " but this file does not contain it")
                     sys.exit(1)
-
-    # generates variable ii to indicate the result column
-    ii = 0
-    if type(result_column) is not list:
-        # checks if integer for column was inputted
-        # assumes counting starting at 1
-        for column_header2 in header:
-            try:
-                type(int(result_column)) == int
-                result_column = int(result_column)
-                # checks for array length exception
-                if result_column > (len(header) - 1):
-                    print("Searching for result column "
-                          + str(result_column)
-                          + " but there are only "
-                          + str(len(header)-1)
-                          + " fields")
-                    sys.exit(1)
-                else:
-                    ii = result_column - 1
-            except ValueError:
-                if result_column == column_header2:
-                    break
-                else:
-                    ii += 1
-                    # checks for str(query_column) match exception
-                    if ii > (len(header)-1):
-                        print("Searching for result column "
-                              + result_column
-                              + " but this file does not contain it")
-                        sys.exit(1)
-    else:
-        for column in result_column:
-            # checks for array length exception
-            if int(column) > (len(header)-1):
-                print("Searching for result column "
-                      + str(column)
-                      + " but there are only "
-                      + str(len(header)-1)
-                      + " fields")
-                sys.exit(1)
-    return(i, ii)
+    return(index)
