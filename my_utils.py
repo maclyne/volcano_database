@@ -7,9 +7,9 @@
                    as an integer or a string and gives the index values of
                    those columns. """
 
-from array import array
 import sys
-from datetime import datetime
+import csv
+import re
 
 def open_file(file_name):
     """ Opens a comma separated CSV file
@@ -64,9 +64,11 @@ def get_column(file_name, query_column, query_value, result_column=1):
     
     f = open_file(file_name)
     
-    # separates header line, removes /n, and splits into its elements
-    header = f.readline().rstrip().split(',')
-
+    # separates header line and removes /n
+    header_unsplit = f.readline().rstrip()
+    # splits header. The gibberish is to not split based on commas in ()
+    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit
+    
     # calls the column_index function to identify the query and result columns
     # based on either their integer or string value
 
@@ -96,7 +98,10 @@ def get_column(file_name, query_column, query_value, result_column=1):
                 Output.append(case)
             # appends value in the result column to the outputted Result array
             else:
-                Output.append(int(A[ii]))
+                try:
+                    Output.append(int(A[ii]))
+                except ValueError:
+                    Output.append(A[ii])
 
     # exception for query_value not found
     if len(Output) == 0:
@@ -173,10 +178,3 @@ def fill_in_column(file_name, column):
     --------
     Output: updated CSV file with filled in gaps 
     """
-    f = open_file(file_name)
-    # separates header line, removes /n, and splits into its elements
-    header = f.readline().rstrip().split(',')
-
-    # calls the column_index function to identify the column index
-    # based on either the integer or string value
-    i = identify_column(query_column, header)
