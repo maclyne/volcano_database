@@ -7,10 +7,35 @@
                    as an integer or a string and gives the index values of
                    those columns. """
 
-from array import array
 import sys
-from datetime import datetime
+import csv
+import re
 
+def open_file(file_name):
+    """ Opens a comma separated CSV file
+
+    Parameters
+    ----------
+    file_name: string
+            The path to the CSV file.
+    Returns:
+    --------
+    Output: the opened file
+    """
+    # Checks for file not found and perrmission errors
+    try:
+        f = open(file_name, 'r')
+    except FileNotFoundError:
+        print("Couldn't find file " + file_name)
+        sys.exit(3)
+    except PermissionError:
+        print("Couldn't access file " + file_name)
+        sys.exit(4)
+    
+    # opens the file
+    f = open(file_name, 'r', encoding="ISO-8859-1")
+    
+    return(f)
 
 def get_column(file_name, query_column, query_value, result_column=1):
 
@@ -36,23 +61,14 @@ def get_column(file_name, query_column, query_value, result_column=1):
     Output: list of intergers or list of lists with multiple result column
             inputs values in the result_column matching the query_value entry.
     """
-
-    # Checks for file not found and perrmission errors
-    try:
-        f = open(file_name, 'r')
-    except FileNotFoundError:
-        print("Couldn't find file " + file_name)
-        sys.exit(3)
-    except PermissionError:
-        print("Couldn't access file " + file_name)
-        sys.exit(4)
-
-    f = open(file_name, 'r', encoding="ISO-8859-1")
-    last_date = None
-
-    # separates header line, removes /n, and splits into its elements
-    header = f.readline().rstrip().split(',')
-
+    
+    f = open_file(file_name)
+    
+    # separates header line and removes /n
+    header_unsplit = f.readline().rstrip()
+    # splits header. The gibberish is to not split based on commas in ()
+    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit
+    
     # calls the column_index function to identify the query and result columns
     # based on either their integer or string value
 
@@ -82,7 +98,10 @@ def get_column(file_name, query_column, query_value, result_column=1):
                 Output.append(case)
             # appends value in the result column to the outputted Result array
             else:
-                Output.append(int(A[ii]))
+                try:
+                    Output.append(int(A[ii]))
+                except ValueError:
+                    Output.append(A[ii])
 
     # exception for query_value not found
     if len(Output) == 0:
@@ -143,3 +162,19 @@ def identify_column(query_column, header):
                           + " but this file does not contain it")
                     sys.exit(1)
     return(index)
+
+def fill_in_column(file_name, column):
+    """ Opens a comma separated CSV file and fills in holes in a specified
+        column with the string preceeding the gap. 
+
+    Parameters
+    ----------
+    file_name: string
+            The path to the CSV file.
+    column: integer or string
+            The column to be filled in
+
+    Returns:
+    --------
+    Output: updated CSV file with filled in gaps 
+    """
