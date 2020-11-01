@@ -32,7 +32,8 @@ def main():
     args = parser.parse_args()
     
     Column_out = get_column(args.file_name, args.query_column,
-                            args.query_value, args.result_column)
+                            args.query_value, args.result_columns)
+    print(Column_out)
 
 if __name__ == '__main__':
     main()
