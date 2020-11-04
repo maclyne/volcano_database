@@ -14,7 +14,7 @@ def main():
                         dest='file_name',
                         type=str,
                         required=True,
-                        help='File name to be parsed.')
+                        help='File name of CSV file to be parsed.')
     parser.add_argument('--query_column',
                         dest='query_column',
                         required=True,
@@ -28,7 +28,7 @@ def main():
                         dest='result_columns',
                         nargs='+',
                         required=True,
-                        help='Column to be returned')
+                        help='Columns to be returned')
     args = parser.parse_args()
     
     Column_out = get_column(args.file_name, args.query_column,
