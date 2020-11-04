@@ -8,6 +8,8 @@
 
 The script bin_eruptions.py allows for input to select the CSV file name, query column, query value, and result columns. Functions in my_utils.py are used to search through the file for a specified volcano, date, or latititude (as desired), collects the requested data from the reult columns of interest, and combines volanic output based on location and date. 
 
+Further code will allow for plotting if this data for visualizaiton.
+
 ***Methods Included:***
    open_file 'Opens a comma separated CSV file.'
    
