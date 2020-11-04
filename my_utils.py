@@ -1,11 +1,17 @@
 """Collects data from a column within a dataset
+    
+    * open_file - opens a comma separated CSV file
 
     * get_column - searches through a data file and finds specific values
                    relating to an inputted search parameter(s).
 
     * identify_column - Identifies the query columns of interest if entered
                    as an integer or a string and gives the index values of
-                   those columns. """
+                   those columns.
+                   
+    * fill_in_column - Opens a comma separated CSV file and fills in holes
+                   in a specifiedcolumn with the string preceeding the gap.
+                   """
 
 import sys
 import csv
@@ -67,11 +73,10 @@ def get_column(file_name, query_column, query_value, result_column=1):
     # separates header line and removes /n
     header_unsplit = f.readline().rstrip()
     # splits header. The gibberish is to not split based on commas in ()
-    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit
+    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit)
     
     # calls the column_index function to identify the query and result columns
     # based on either their integer or string value
-
     i = identify_column(query_column, header)
 
     ii = []
@@ -178,3 +183,15 @@ def fill_in_column(file_name, column):
     --------
     Output: updated CSV file with filled in gaps 
     """
+#     previous_line = []
+#     f = open_file(file_name)
+#     print(f)
+#     #go through each line and fill in with the previous value if empty
+#     for line in f:
+#         A = line.rstrip().split(',')
+#         print(A[1])
+#         if A[0] == None:
+#             line[0] = previous_line
+#         previous_line = line[0]
+#     
+    # this is probably garbage but the idea is to then write a new CSV file
