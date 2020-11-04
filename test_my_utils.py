@@ -36,6 +36,12 @@ class TestGetColumn(unittest.TestCase):
         correct = [['Boulder', 'Colorado', '08013']]*18
         self.assertListEqual(output, correct)
 
+        # test county query with string input
+        output = my_utils.get_column('data_testset.csv', 'county',
+                                     'Boulder', ['county', 2, 'fips'])
+        correct = [['Boulder', 'Colorado', '08013']]*18
+        self.assertListEqual(output, correct)
+
     def test_VolcanoDataSet(self):
         # simple one line desired
         output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
@@ -85,7 +91,6 @@ class TestGetColumn(unittest.TestCase):
         with self.assertRaises(SystemExit) as cm:
             my_utils.get_column('data_testset.csv', 2, 'Fort Collins', 'cases')
         self.assertEqual(cm.exception.code, 1)
-
 
 if __name__ == '__main__':
     main()
