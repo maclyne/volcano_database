@@ -30,10 +30,38 @@ def main():
                         required=True,
                         help='Columns to be returned')
     args = parser.parse_args()
-    
+
+    # Step 1: Reformat data in file to have the volcano name
+    # associated with every data point for that volcano
+    # (the volcano name is currently written once and then
+    # there is a gap in the name columns for the data for subsequent
+    # eruptions of that volcano)
+
+    # Step 2: Extract out columns of interest. Such as date, latitude,
+    # SO2 expellation, and plume height.
+    # The goal is to make this part as user friendly as possible by
+    # allowing string input of columns as well as integer input.
     Column_out = get_column(args.file_name, args.query_column,
                             args.query_value, args.result_columns)
     print(Column_out)
+
+    # Step 3: Bin volcanos spatially and temporally
+
+    # 3a (Temporal): Run function that calculates SO2 decay reactions
+    # to take into account volcanos that happened near the same time
+    # adding together their atmosphereic emmission. Stratopshereic
+    # volcano plumes would have a larger impact on this factor
+
+    # 3b (Spatial): Run function that collects the volcanos based on
+    # how close they are latitudally, taking into account the global
+    # wind patterns.
+
+    # Step 4: Plot the data
+    # Show the result of the binned data in a plot similar to shown in
+    # class with axises of time and latitude.
+    # Also potentially create a plot suggesting the combined impact of the
+    # binned volcanoes on global temperature.
+
 
 if __name__ == '__main__':
     main()
