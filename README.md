@@ -17,9 +17,6 @@ Further code will allow for plotting if this data is for visualizaiton.
    
    identify_column 'Identifies the query and result columns of interest if entered as an integer or a string and gives the index values of those columns.'
 
-   fill_in_column 'Opens a comma separated CSV file and fills in holes
-                   in a specifiedcolumn with the string preceeding the gap.'
-                   
                    
 ***This progam can be used through inputting the arguments outlined in print_cases.py including:*** 
 
