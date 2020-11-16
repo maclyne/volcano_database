@@ -47,7 +47,7 @@ def open_file(file_name):
 
 def get_column(file_name, query_column, query_value, result_column=1):
 
-    """ Opens a comma separated CSV file and returns a list of intergers
+    """ Opens a comma separated CSV file and returns a list of integers
         from the result_column where the query_value matches the value in
         the query_column.
 
@@ -66,7 +66,7 @@ def get_column(file_name, query_column, query_value, result_column=1):
 
     Returns:
     --------
-    Output: list of intergers or list of lists with multiple result column
+    Output: list of intergers or list of lists of strings with multiple result column
             inputs values in the result_column matching the query_value entry.
     """
 
@@ -90,7 +90,7 @@ def get_column(file_name, query_column, query_value, result_column=1):
         ii = identify_column(result_column, header)
 
     # create Results list to add results to with multiple result columns
-    Output = []
+    output = []
 
     for line in f:
         A = line.rstrip().split(',')
@@ -102,22 +102,22 @@ def get_column(file_name, query_column, query_value, result_column=1):
                 case = []
                 for index in ii:
                     case.append(A[index])
-                Output.append(case)
+                output.append(case)
             # appends value in the result column to the outputted Result array
             else:
                 try:
-                    Output.append(int(A[ii]))
+                    output.append(int(A[ii]))
                 except ValueError:
-                    Output.append(A[ii])
+                    output.append(A[ii])
 
     # exception for query_value not found
-    if len(Output) == 0:
+    if len(output) == 0:
         print(query_value + ' was not located in the column '
               + str(query_column))
         sys.exit(1)
 
-    return(Output)
     f.close()
+    return(output)
 
 
 def identify_column(query_column, header):
@@ -132,7 +132,7 @@ def identify_column(query_column, header):
     header: list of strings
             The header of the file of interest which contains the column
             titles to be searched for a match with inputted strings for query
-            or result columns.
+            columns.
 
     Returns:
     --------
@@ -169,34 +169,3 @@ def identify_column(query_column, header):
                           + " but this file does not contain it")
                     sys.exit(1)
     return(index)
-
-
-def fill_in_column(file_name, column):
-    """ Opens a comma separated CSV file and fills in holes in a specified
-        column with the string preceeding the gap.
-
-    Parameters
-    ----------
-    file_name: string
-            The path to the CSV file.
-    column: integer or string
-            The column to be filled in
-
-    Returns:
-    --------
-    Output: updated CSV file with filled in gaps.
-    """
-#     previous_line = []
-#     f = open_file(file_name)
-#     print(f)
-#     #go through each line and fill in with the previous value if empty
-#     for line in f:
-#         A = line.rstrip().split(',')
-#         print(A[1])
-#         if A[0] == None:
-#             line[0] = previous_line
-#         previous_line = line[0]
-
-    # this is probably garbage but the idea is to then write a new CSV file
-    # that corrects some of the formatting issues of the dat set we are
-    # working with.

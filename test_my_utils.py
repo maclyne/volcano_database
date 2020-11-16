@@ -46,22 +46,20 @@ class TestGetColumn(unittest.TestCase):
         # simple one line desired
         output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
                                      'Calbuco', ['Latitude', 'Longitude'])
-        correct = [['-41.326', '-72.614']]
-        self.assertListEqual(output,correct)
+        correct = ['-41.326', '-72.614']
+        self.assertListEqual(output[0],correct)
         
         # find data past extra ',' in headerline
         output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
                                      'Calbuco', 'Vent altitude (m a.s.l.)')
-        correct = [2003]
+        correct = [2003, 2003]
         self.assertListEqual(output,correct)
         
-        # This test should fail as it is testing the issue related to the format of the data
-        # and that issue is still being worked on
-#         # multiple eruptions wanted
-#         output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
-#                                      'Calbuco', 'Date start (UTC)')
-#         correct = [['4/22/2015 21:04'], ['4/23/2015 3:54']]
-#         self.assertListEqual(output,correct)
+        # multiple eruptions wanted and multiple results
+        output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
+                                     'Calbuco', ['Date start (UTC)','Vent altitude (m a.s.l.)'])
+        correct = [['4/22/2015 21:04', '2003'], ['4/23/2015 3:54', '2003']]
+        self.assertListEqual(output,correct)
 
     def test_ErrorModes(self):
         # file not found
