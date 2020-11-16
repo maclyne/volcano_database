@@ -2,7 +2,7 @@
 
 ## Authors: Margot Clyne and Clair Huffine
 ## Created: October 28 2020
-## Last Updated: November 4 2020
+## Last Updated: November 6 2020
 
 ## This project applies software engineering best practicies to the spatial and temporal binning of volcanic eruptions over the past century to better include their impact on global temperature abnormalities. 
 
