@@ -57,8 +57,8 @@ class TestGetColumn(unittest.TestCase):
         
         # multiple eruptions wanted and multiple results
         output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
-                                     'Calbuco', 'Date start (UTC)')
-        correct = ['4/22/2015 21:04', '4/23/2015 3:54']
+                                     'Calbuco', ['Date start (UTC)','Vent altitude (m a.s.l.)'])
+        correct = [['4/22/2015 21:04', '2003'], ['4/23/2015 3:54', '2003']]
         self.assertListEqual(output,correct)
 
     def test_ErrorModes(self):
