@@ -90,7 +90,7 @@ def get_column(file_name, query_column, query_value, result_column=1):
         ii = identify_column(result_column, header)
 
     # create Results list to add results to with multiple result columns
-    Output = []
+    output = []
 
     for line in f:
         A = line.rstrip().split(',')
@@ -102,22 +102,22 @@ def get_column(file_name, query_column, query_value, result_column=1):
                 case = []
                 for index in ii:
                     case.append(A[index])
-                Output.append(case)
+                output.append(case)
             # appends value in the result column to the outputted Result array
             else:
                 try:
-                    Output.append(int(A[ii]))
+                    output.append(int(A[ii]))
                 except ValueError:
-                    Output.append(A[ii])
+                    output.append(A[ii])
 
     # exception for query_value not found
-    if len(Output) == 0:
+    if len(output) == 0:
         print(query_value + ' was not located in the column '
               + str(query_column))
         sys.exit(1)
 
-    return(Output)
     f.close()
+    return(output)
 
 
 def identify_column(query_column, header):
@@ -132,7 +132,7 @@ def identify_column(query_column, header):
     header: list of strings
             The header of the file of interest which contains the column
             titles to be searched for a match with inputted strings for query
-            or result columns.
+            columns.
 
     Returns:
     --------
