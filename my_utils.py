@@ -169,34 +169,3 @@ def identify_column(query_column, header):
                           + " but this file does not contain it")
                     sys.exit(1)
     return(index)
-
-
-def fill_in_column(file_name, column):
-    """ Opens a comma separated CSV file and fills in holes in a specified
-        column with the string preceeding the gap.
-
-    Parameters
-    ----------
-    file_name: string
-            The path to the CSV file.
-    column: integer or string
-            The column to be filled in
-
-    Returns:
-    --------
-    Output: updated CSV file with filled in gaps.
-    """
-#     previous_line = []
-#     f = open_file(file_name)
-#     print(f)
-#     #go through each line and fill in with the previous value if empty
-#     for line in f:
-#         A = line.rstrip().split(',')
-#         print(A[1])
-#         if A[0] == None:
-#             line[0] = previous_line
-#         previous_line = line[0]
-
-    # this is probably garbage but the idea is to then write a new CSV file
-    # that corrects some of the formatting issues of the dat set we are
-    # working with.
