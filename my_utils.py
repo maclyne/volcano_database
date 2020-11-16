@@ -47,7 +47,7 @@ def open_file(file_name):
 
 def get_column(file_name, query_column, query_value, result_column=1):
 
-    """ Opens a comma separated CSV file and returns a list of intergers
+    """ Opens a comma separated CSV file and returns a list of integers
         from the result_column where the query_value matches the value in
         the query_column.
 
