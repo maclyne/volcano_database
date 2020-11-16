@@ -66,7 +66,7 @@ def get_column(file_name, query_column, query_value, result_column=1):
 
     Returns:
     --------
-    Output: list of intergers or list of lists with multiple result column
+    Output: list of intergers or list of lists of strings with multiple result column
             inputs values in the result_column matching the query_value entry.
     """
 
