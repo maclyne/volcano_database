@@ -2,7 +2,7 @@ rule all:
 	input: 'volcano_clustered_timeseries_plot.png'
 
 rule create_Data1_file:
-	input: 'Aubry_2017_Table_S2_database_volcano_parameters.csv'
+	input: 'carn_MSVOLSO2L4_forclassproject.csv'
 	output: 'Data1.csv'
 	shell:
 	'''
@@ -41,6 +41,20 @@ rule timeseries_plots:
 	output: 'volcano_clustered_timeseries_plot.png'
 	shell:
 	'''
-	# TODO
+	python plot_volcano_clusters_timeseries.py \
+		--in_file 'volcano_sig_Thompson2009.csv' \
+                --out_file {output} \
+                --x_label 'Date' \
+                --y_label 'Volcano fit anomoly of global mean SST' \
+                --height 5 \
+                --width 5 \
+                --title 'Stratospheric Volcanic Eruptions' \
+		--label_plotA 'Thompson 2009' \
+		--x_column_list #TODO \ 
+		--y_column_list #TODO \
+		--lat_bin_edges $LAT_BIN_EDGES \
+		--in_file_plotC 'Data2.csv' \
+		--latbins_column_list #TODO \
+		--in_file_plotD 'Data3.csv'
 	'''
 
