@@ -169,3 +169,57 @@ def identify_column(query_column, header):
                           + " but this file does not contain it")
                     sys.exit(1)
     return(index)
+
+def check_plume_height(file_name, query_columns):
+
+    """ TODO: Update documentation
+    Opens a comma separated CSV file and returns [ADD]
+
+    Parameters
+    ----------
+    file_name: string
+            The path to the CSV file.
+    query_column: integer or string
+            The column to search for the query_value in.
+
+
+    Returns:
+    --------
+    Output: 
+    """
+    
+    f = open_file(file_name)
+
+    # separates header line and removes /n
+    header_unsplit = f.readline().rstrip()
+    # splits header. The gibberish is to not split based on commas in ()
+    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit)
+
+    # calls the column_index function to identify the query columns
+    # based on either their integer or string value
+    i = []
+
+    for q_column in query_columns:
+        column_index = identify_column(q_column, header)
+        i.append(column_index)
+
+    # create Results list to add results to with multiple result columns
+    greater_than_zero = []
+
+    for line in f:
+        A = line.rstrip().split(',')
+        # appends value in the result columns to the outputted Result list
+        difference = float(A[i[0]]) - float(A[i[1]])
+        if difference >= 0:
+            greater_than_zero.append('y')
+        else:
+            greater_than_zero.append('n')
+
+    # exception for query_value not found
+    if len(greater_than_zero) == 0:
+        print(query_value + ' was not located in the column '
+              + str(query_column))
+        sys.exit(1)
+
+    f.close()
+    return(greater_than_zero)
