@@ -20,7 +20,8 @@ Date : Nov 8 2020
 """
 import sys
 import argparse
-import bin_utils.py
+from bin_utils import get_bindex
+from bin_utils import add_column_csv
 
 def main():
     '''
@@ -125,14 +126,15 @@ def bin_by_latzone(infile, outfile, lat_column, lat_bin_edges):
     # read the infile and figure out the latbin_zones
     bindex_list = []
     f = open(infile, 'r')
+    # skip first header line
+    next(f)
     for line in f:
         A = line.rstrip().split(',')
-        bindex_list.append(get_bindex(value=A[lat_column],
+        bindex_list.append(get_bindex(value=float(A[lat_column]),
                                       bin_edges_list=lat_bin_edges))
 
     f.close()
     new_column_name = 'latbin_zone'
-    
     # write copy of infile to outfile with latbin_zone column added
     add_column_csv(infile, outfile, new_column_name, column_data=bindex_list)
 
