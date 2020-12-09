@@ -15,39 +15,45 @@ def main():
                         type=str,
                         required=True,
                         help='File name of CSV file to be parsed.')
-    parser.add_argument('--query_columns',
-                        dest='query_columns',
+    parser.add_argument('--query_column',
+                        dest='query_column',
                         required=True,
-                        nargs='+',
-                        help='Columns containing plume altitude and'
-                        + 'tropopause height')
+                        help='Column to be searched to match query_value')
+    parser.add_argument('--query',
+                        dest='query_value',
+                        type=str,
+                        required=True,
+                        help='Value to be searched for in query_column')
     parser.add_argument('--result_columns',
                         dest='result_columns',
                         nargs='+',
                         required=True,
                         help='Columns to be returned')
+    parser.add_argument('--out_file',
+                        dest='out_file',
+                        type=str,
+                        required=True,
+                        help='File name of CSV file to be created.')
     args = parser.parse_args()
     
-    # Step 1: Extract out columns of interest. Such as date, latitude,
-    # SO2 expellation, and plume height.
-    # The goal is to make this part as user friendly as possible by
-    # allowing string input of columns as well as integer input.
-    
-    # calculates whether volcano plume reached stratosphere
-    # returns y or n in a list 
-    stratospheric = my_utils.check_plume_height(args.file_name, args.query_columns)
-    print(stratospheric)
-    
-    out_file = args.file_name + '_strato.csv'
-    strato_column = 'Stratospheric(y/n)'
-    
-    # adds stratospheric y/n list to data set
-    updated_CSV_stratospheric = bin_utils.add_column_csv(args.file_name, out_file, strato_column, stratospheric)
-    
+    # Step 1: Extract out columns of interest. Such as volcano, date, latitude,
+    # and SO2 expellation
+
     # extracts the desired columns for stratospheric volcanos
-    volcano_data = my_utils.get_column(out_file, strato_column,
-                            'y', args.result_columns)
-    print(volcano_data)
+    volcano_data = my_utils.get_column(args.file_name, args.query_column,
+                            args.query_value, args.result_columns)
+    
+    # writes CVS file from extracted data
+    fout = open(args.out_file, 'w')
+    # creates header
+    fout.write('volcano, date, latitude, so2_output' + '\n')
+    # adds data
+    for volcano, date, latitude, so2_output in volcano_data:
+        fout.write(volcano + ',' + date + ',' + latitude + ',' + so2_output + '\n')
+        
+    fout.close()
+    
+    
 
     # Step 2: Bin volcanos spatially and temporally
 
