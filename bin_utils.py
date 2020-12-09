@@ -46,11 +46,9 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
     # write data to new file that is a copy of old file with added column:
     fin = open(infile, 'r')
     out_line_list = []
-    # get header line
-    in_header = fin[0] #NOTE: double check
-    print(in_header,'in_header') #NOTE: debugging
-    # skip first header line
-    next(fin)
+    # get header line and remove /n
+    in_header = fin.readline().rstrip() 
+
     # parse through file lines
     for l in fin:
         out_line_list.append(l)
@@ -59,10 +57,11 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
 
     out_dataset_file = outfile
     fout = open(out_dataset_file, 'w')
-    # write outfile header #TODO: double check this
+    # write outfile header 
     fout.write(in_header +","+ new_column_name+" \n")
     # print all lines of previus file but with column_data added as new column
     for line in range(len(column_data)):
+
         new_out_line_list = out_line_list[line].strip()+','+str(column_data[line])+ '\n'
         fout.write(new_out_line_list)
 
