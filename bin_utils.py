@@ -47,8 +47,7 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
     fin = open(infile, 'r')
     out_line_list = []
     # get header line and remove /n
-    in_header = fin.readline().rstrip() 
-
+    in_header = fin.readline().rstrip() #NOTE: diff from BRAC_get_permit_data.py
     # parse through file lines
     for l in fin:
         out_line_list.append(l)
@@ -60,8 +59,7 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
     # write outfile header 
     fout.write(in_header +","+ new_column_name+" \n")
     # print all lines of previus file but with column_data added as new column
-    for line in range(len(column_data)):
-
+    for line in range(len(column_data)): #NOTE: this is diff from BRAC_get_permit_data.py
         new_out_line_list = out_line_list[line].strip()+','+str(column_data[line])+ '\n'
         fout.write(new_out_line_list)
 
@@ -77,10 +75,10 @@ def get_bindex(value, bin_edges_list):
 
     Parameters:
     ----------
-    value: int (or float or str)      (dtype of contentents of bin_edges_list).
+    value: int (or float)      (dtype of contentents of bin_edges_list).
                     the value to find the matching bin of
 
-    bin_edges_list: list of int (or of float or str)
+    bin_edges_list: list of int (or of float)
                          list of bin edges.
                          NOTE: must be either monotonically increasing \
                                            or monotonically decreasing
@@ -103,7 +101,7 @@ def get_bindex(value, bin_edges_list):
     if bin_order == 'increasing':
         bindex = np.digitize(value, bin_edges_list, right=False).tolist()
     else:
-        bindex = np.searchsorted(value, bin_edges_list, right=True).tolist()
+        bindex = np.digitize(value, bin_edges_list, right=True).tolist()
 
     return bindex
 
