@@ -1,3 +1,14 @@
+'''
+File: calculate_strato_eruption.py
+Author: Clair Huffine
+Date: Dec 7 2020
+
+This file will determine if the volcanoic erpuptions reached the
+stratosphere and add 'y' or 'n' to the data within the original CSV
+file as a new column and create and out put a new CSV file.
+
+'''
+
 import my_utils
 import bin_utils
 import argparse
@@ -8,7 +19,7 @@ def main():
 
     parser = argparse.ArgumentParser(
              description='Determine if the volcanoic erpuptions'
-                         'reached the stratosphere and add y/n to' 
+                         'reached the stratosphere and add y/n to'
                          'data CSV file')
 
     parser.add_argument('--file',
