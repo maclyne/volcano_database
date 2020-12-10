@@ -22,6 +22,9 @@ import sys
 import argparse
 from bin_utils import get_bindex
 from bin_utils import add_column_csv
+import my_utils
+from datetime import date
+from datetime import timedelta
 
 def main():
     '''
@@ -207,9 +210,75 @@ def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
         volc_size = volc_size - 1
 
 
+def identify_volcano_size(infile, outfile, SO2_output_column, time_cluster_info_file):
+    """
+    Identifies and bins volcanos by size from time_cluster_info_file.
+    The output clusters have info of latbin_zone, binned_mass_so2,
+    and coverage_time
+    This is all output to a CSV file.
 
 
+    Parameters:
+    ----------
+    infile : str   of filepath/filename that contains \
+                   ONLY stratospheric eruptions.
+                   CSV file has columns of: \
+                          volcano_label, \
+                          latitude, \
+                          date, \
+                          mass_so2, \
+                          latbin_zone
 
+    outfile : str  of filepath/filename that will be created.
+                        The CSV columns will be:
+                        latbin_zone, binned_mass_so2, and coverage_time
+    
+    SO2_output_column : str or int
+                        The column containing the SO2 mass output
+
+    time_cluster_info_file : str   of filepath/filename for a CSV file that \
+                                    contains the coverage_time for \
+                                    volcanoes by their size (currently by mass so2)
+    """
+    
+    f = my_utils.open_file(infile)
+    ref = my_utils.open_file(time_cluster_info_file)
+    
+    # skip first header line
+    next(ref)
+    
+    # separates header line and removes /n
+    header_unsplit = f.readline().rstrip()
+    # splits header. The gibberish is to not split based on commas in ()
+    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit)
+
+    # calls the column_index function to identify the SO2_output column
+    # based on either its integer or string value
+    i = []
+
+    column_index = identify_column(SO2_output_column, header)
+    i.append(column_index)
+
+    # create Results list to add results to
+    size_unit = []
+    coverage_time = []
+
+    for line in f:
+        A = line.rstrip().split(',')
+        for line2 in ref:
+            r = line2.rstrip().split(',')
+            # where SO2 mass falls within preset ranges
+            if A[i] >= r[0] and A[i] <= r[1]:
+                size_unit.append(r[2])
+                coverage_time.append(r[3])
+            else:
+                continue
+    f.close()
+    ref.close()
+    
+    # add columns with data to the file
+    add_column_csv(infile, out_file, 'size_unit', size_unit)
+    add_column_csv(out_file, out_file, 'coverage_time_years', coverage_time)
 
 
 if __name__ == '__main__':
