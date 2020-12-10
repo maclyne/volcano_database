@@ -27,6 +27,23 @@ assert_no_stderr
 assert_exit_code 0
 assert_equal 'Data1.csv' $( ls 'Data1.csv' )
 
+run test_FileNotFound_error_extract_eruptions python extract_eruptions.py \
+            --file 'Updated_dat.csv' \
+            --query_column "Stratospheric_(y/n)" \
+            --query "y" \
+            --result_columns "ï»¿volcano" "date" "lat" "so2(kt)"\
+            --out_file 'Data1.csv'
+assert_exit_code 3
+assert_in_stdout "Couldn't find file Updated_dat.csv"
+
+run test_ResultColumnOutofRange_error_extract_eruptions python extract_eruptions.py \
+            --file 'Updated_data.csv' \
+            --query_column "Stratospheric_(y/n)" \
+            --query "y" \
+            --result_columns "ï»¿volcano" "date" "lat" 78\
+            --out_file 'Data1.csv'
+assert_exit_code 1
+assert_in_stdout "Searching for result column 78 but there are only 12 fields"
 
 # cluster_eruptions.py tests
 LAT_BIN_EDGES=$(cat 'lat_bin_edges_file.txt' | xargs printf "%s" | awk -F',' '{{gsub(" ","-"); print}}' | awk -F',' '{{gsub(","," "); print}}' | sed 's/[][]//g')
