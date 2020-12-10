@@ -6,7 +6,13 @@
 
 ## This project applies software engineering best practices to the spatial and temporal binning of volcanic eruptions over the past century to better include their impact on global temperature abnormalities. 
 
-This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. The workflow of this project in Snakefile is pictured below:
+
+[ADD INFORMATION ON THE IMPORTANCE OF THIS PROJECT]
+
+<center><img src="[add final plots here]" width="300"/></center>
+
+
+This project works with data from [Carn et.al 2016](https://www.sciencedirect.com/science/article/pii/S0377027316000032). The workflow of this project in Snakefile is pictured below:
 
 <center><img src="[add dag.png here]" width="300"/></center>
 
@@ -20,6 +26,7 @@ This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. 
         - my_utils.check_plume_height
         - bin_utils.add_column_csv
 
+
 2. The script **extract_eruptions.py** searched through the file (Updated_data.csv) for all volcanos that reached the stratosphere and therefore contained a 'y' in the column 'Stratosphere_(y/n)' and returned the volcano, date, latitude, and SO2 expellation columns. This data was then used to create a new CSV file (Data1.csv).
 
     - Inputs:
@@ -31,6 +38,7 @@ This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. 
     - Functions used:
         - my_utils.get_column
 
+
 3. The function **bin_by_latzone** in the script **cluster_eruptions.py** determined the latitude zone bin of the volcanos in the infile (Data1.csv), and wrote a new outfile (Data2.csv) that was a copy of the infile but with new column named latbin_zone at the end.
 
     - Inputs:
@@ -41,6 +49,7 @@ This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. 
     - Functions used:
         - bin_utils.get_binindex
         - bin_utils.add_column_csv
+
 
 4. The function **identify_volcano_size** in the script **cluster_eruptions.py** used the data in Data2.csv and identified and bins volcanos by size based on the ranges and coverage time set in time_cluster_info_file.csv. The output (Data3.csv) was a copy of the infile but with new columns named size_unit and coverage_time at the end. 
 
@@ -55,7 +64,10 @@ This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. 
         - my_utils.identify_column
         - bin_utils.add_column_csv
 
+
 5. The function **cluster_eruptions_geotemporal** in the script **cluster_eruptions.py** allows for input to select the CSV file, the output file name, [TODO: UPDATE once completed]
+
+
 
 6. The script **plot_volcano_clustered_timeseries_plot.png** creates four subplots:
 
@@ -102,16 +114,5 @@ This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. 
 
 Tests can be viewed through the execution of the shells
 ```
-$bash test_bin_eruptions.sh
-```
-Example Code:
-
-Input
-```
-(will add code when complete)
-```
-
-Output:
-```
-(will add output when complete)
+$bash test_extract_eruptions.sh
 ```
