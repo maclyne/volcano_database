@@ -121,7 +121,7 @@ def get_column(file_name, query_column, query_value, result_column=1):
     if len(output) == 0:
         print(query_value + ' was not located in the column '
               + str(query_column))
-        sys.exit(1)
+        #sys.exit(1)
 
     f.close()
     return(output)
