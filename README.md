@@ -77,25 +77,27 @@ This project works with data from [TODO: ADD PAPER WHERE DATA IS SOURCED FROM]. 
         - colorscheme: latzones (same legend as Plot B)
 
 
-Further code will allow for plotting if this data is for visualizaiton.
-
 ***Methods Included:***
-   open_file 'Opens a comma separated CSV file.'
+- my_utils.py
+    - **open_file** 'Opens a comma separated CSV file.'
    
-   get_column 'Returns an array of integers from the result_column where the query_value matches the value in the query_column.'
+    - **get_column** 'Returns an array of integers from the result_column where the query_value matches the value in the query_column.'
    
-   identify_column 'Identifies the query and result columns of interest if entered as an integer or a string and gives the index values of those columns.'
+    - **identify_column** 'Identifies the query and result columns of interest if entered as an integer or a string and gives the index values of those columns.'
+    
+    - **check_plume_height** 'Opens a comma separated CSV file, calculates if the value in the first query column is greater than the value in the second query column and then adds a 'y' or 'n' to the outputted list'
 
-                   
-***This progam can be used through inputting the arguments outlined in print_cases.py including:*** 
+- bin_utils.py
+    - **get_bindex** 'given a value and a list of bin edges, returns the index of the bin the value should go in'
 
-***--file*** 'File name of CSV file to be parsed.'
+    - **add_column_csv** 'makes copy of the infile with a new last column added'
 
-***--query_column*** 'Column to be searched to match query_value'
+- cluster_eruptions.py
+    - **bin_by_latzone** 'determines the latitude zone bin of the volcanos in the infile, and writes a new outfile that is a copy of the infile but with new column named latbin_zone at the end.'
+    
+    - **cluster_eruptions_geotemporal** TODO: ADD
 
-***--query*** 'Value to be searched for in query_column'
-
-***--result_columns*** 'Columns to be returned'
+    - **identify_volcano_size** 'Identifies and bins volcanos by size from time_cluster_info_file. The output clusters have info of latbin_zone, size_unit, and coverage_time.'
 
 
 Tests can be viewed through the execution of the shells
