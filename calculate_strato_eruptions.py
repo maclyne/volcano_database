@@ -7,8 +7,9 @@ import sys
 def main():
 
     parser = argparse.ArgumentParser(
-             description='Get data from a column that corresponds'
-             + 'to a requested value in a different column')
+             description='Determine if the volcanoic erpuptions'
+                         'reached the stratosphere and add y/n to' 
+                         'data CSV file')
 
     parser.add_argument('--file',
                         dest='file_name',
@@ -27,14 +28,19 @@ def main():
                         required=True,
                         help='File name of CSV file to be created.')
     args = parser.parse_args()
+
     # calculates whether volcano plume reached stratosphere
-    # returns y or n in a list 
-    stratospheric = my_utils.check_plume_height(args.file_name, args.query_columns)
-    
+    # returns y or n in a list
+    stratospheric = my_utils.check_plume_height(args.file_name,
+                                                args.query_columns)
+
     strato_column = 'Stratospheric_(y/n)'
-    
+
     # adds stratospheric y/n list to data set
-    updated_CSV_stratospheric = bin_utils.add_column_csv(args.file_name, args.out_file, strato_column, stratospheric)
+    updated_CSV_stratospheric = bin_utils.add_column_csv(args.file_name,
+                                                         args.out_file,
+                                                         strato_column,
+                                                         stratospheric)
 
 
 if __name__ == '__main__':
