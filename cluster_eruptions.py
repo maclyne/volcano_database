@@ -21,7 +21,7 @@ Date : Nov 8 2020
 
 * identify_volcano_size - Identifies and bins volcanos by size from
           time_cluster_info_file. The output clusters have info of
-          latbin_zone, binned_mass_so2, and coverage_time
+          latbin_zone, size_unit, and coverage_time
 
 """
 import sys
