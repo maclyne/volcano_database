@@ -91,6 +91,6 @@ rule timeseries_plots:
             --lat_bin_edges $LAT_BIN_EDGES \
             --in_file_plotC 'Data2.csv' \
             --latbins_column_list #TODO \
-            --in_file_plotD 'Data3.csv'
+            --in_file_plotD 'Data4.csv'
         '''
 

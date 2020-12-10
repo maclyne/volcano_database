@@ -9,9 +9,6 @@
                    as an integer or a string and gives the index values of
                    those columns.
 
-    * fill_in_column - Opens a comma separated CSV file and fills in holes
-                   in a specifiedcolumn with the string preceeding the gap.
-
     * check_plume_height - Opens a comma separated CSV file, calculates if
                     the value in the first query column is greater than the
                     value in the second query column and then adds a 'y' or
@@ -122,6 +119,7 @@ def get_column(file_name, query_column, query_value, result_column=1):
         print(query_value + ' was not located in the column '
               + str(query_column))
         #sys.exit(1)
+
 
     f.close()
     return(output)
