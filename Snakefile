@@ -22,7 +22,7 @@ rule create_Data1_file:
             --query_column "Stratospheric_(y/n)" \
             --query "y" \
             --result_columns "ï»¿volcano" "date" "lat" "so2(kt)"\
-             --out_file {output}
+            --out_file {output}
         # creates outputfile Data1.csv with columns of: 
                    # volcano_label, date, latitude, mass_so2
                    # NOTE: for ONLY stratospheric eruptions
@@ -39,8 +39,8 @@ rule create_Data2_file:
             --function_name "bin_by_latzone" \
             --infile {input[0]} \
             --outfile {output} \
-            --lat_column 2 \
-            --lat_bin_edges $LAT_BIN_EDGES 
+            -lat_column 2 \
+            -lat_bin_edges $LAT_BIN_EDGES 
         '''
 
 rule identify_volcano_size:
@@ -48,14 +48,20 @@ rule identify_volcano_size:
     output: 'Data3.csv'
     shell:
         '''
-        #TODO: update to run function identify_volcano_size(infile, outfile, SO2_output_column, time_cluster_info_file)
-        # NOTE: I dont know how to do this with a function not a script
+        python cluster_eruptions.py \
+            --function_name 'identify_volcano_size' \
+            --infile {input[0]} \
+            --outfile {output} \
+            -SO2_output_column 3 \
+            -time_cluster_info_file {input[1]}
+            # creates outputfile Data3.csv with columns of: 
+                   # volcano_label, date, latitude, mass_so2, latbin_zone, size_unit, and coverage_time_years
         '''
 
 rule create_Data4_file:
     input: 'Data3.csv'
     output: 'Data4.csv'
-    shell:     #NOTE: (TODO) this will create Data3.csv with columns of: lat_bin_number, binned_mass_so2, binned_date
+    shell:     #NOTE: (TODO) this will create Data4.csv with columns of: lat_bin_number, binned_mass_so2, binned_date
         '''
         python cluster_eruptions.py \
             --function_name 'cluster_eruptions_geotemporal' \
