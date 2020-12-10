@@ -31,7 +31,8 @@ import argparse
 import plot_lib
 from datetime import date
 matplotlib.use('Agg')
-
+import pylab
+from pylab import rcParams
 
 def main():
     parser = plot_lib.get_args('Make a volcano cluster timeseries plots.')
@@ -102,16 +103,16 @@ def main():
     label_plotA = args.label_plotA
     # Plot C (and some for D) args
     infile_plotC = args.in_file_plotC
-    # NOTE: carried over from MargotHW9 code might be wrong
-    lat_bin_edges = [i.replace('-', ' ') for i in args.lat_bin_edges]
+    latbins_column_list = args.latbins_column_list
+    lat_bin_edges = args.lat_bin_edges
     # Plot D args
     infile_plotD = args.in_file_plotD
 
     # calculate num_latbins and latzone_labels
     num_latbins = len(lat_bin_edges) - 1
     latzone_labels = []
-    for z in range(1, len(num_latbins) + 1):
-        latzone_labels.append('latzone' + z + ' [' + str(lat_bin_edges[z-1])
+    for z in range(1, num_latbins + 1):
+        latzone_labels.append('latzone' + str(z) + ' [' + str(lat_bin_edges[z-1])
                               + ',' + str(lat_bin_edges[z]) + ')')
 
     lat_bin_list = range(1, num_latbins + 1)
@@ -128,35 +129,35 @@ def main():
 
     # plot A data
     x_plotA = []
-    x_plotA = []
+    y_plotA = []
     for line in open(infile_plotA):
-        A = line.rstrip().split()
-        x_plotA.append(float(A[x_columnA]))
-        y_plotA.append(float(A[y_columnA]))
+        A = line.rstrip().strip("\ufeff").split(',')
+        x_plotA.append(A[x_columnA])
+        y_plotA.append(A[y_columnA])
 
     x_plotA = [date.fromisoformat(i) for i in x_plotA]
     y_plotA = [float(i) for i in y_plotA]
-
+    
     # plot c data
     x_plotC = []
     y_plotC = []
     for z in range(num_latbins):
-        data = get_column_localfunc(args.in_plotC,
+        data = get_column_localfunc(infile_plotC,
                                     latbins_columnC,
-                                    lat_bin_list[z],
+                                    str(lat_bin_list[z]),
                                     result_columns=[x_columnC, y_columnC])
         data[0] = [date.fromisoformat(i) for i in data[0]]
         data[1] = [float(i) for i in data[1]]
         x_plotC.append([data[0]])
         y_plotC.append([data[1]])
-
+    
     # plot D data
     x_plotD = []
     y_plotD = []
     for z in range(num_latbins):
-        data = get_column_localfunc(args.in_plotD,
+        data = get_column_localfunc(infile_plotD,
                                     latbins_columnD,
-                                    lat_bin_list[z],
+                                    str(lat_bin_list[z]),
                                     result_columns=[x_columnD, y_columnD])
         data[0] = [date.fromisoformat(i) for i in data[0]]
         data[1] = [float(i) for i in data[1]]
@@ -175,6 +176,7 @@ def main():
     for j in range(0, 2):
         ax[0, j].plot(x_plotA, y_plotA, '-', color='blue', lw=2.0,
                       label=label_plotA)
+        ax[0, j].set_ylim([-0.35, 0.])
         ax[0, j].set_ylabel(y_label_plotA)
         ax[0, j].spines['top'].set_visible(False)
         ax[0, j].spines['right'].set_visible(False)
@@ -184,13 +186,14 @@ def main():
     y_min_plotC = 0
     ax[1, 0].invert_yaxis()
     for z in range(num_latbins):
-        markerlineC, stemlinesC, baselineC = \
-            ax[1, 0].stem(x_plotC[z][0], y_plotC[z][0], linefmt='grey',
-                          bottom=y_min_plotC, use_line_collection=True,
-                          label=latzone_labels[z])
-        markerlineC.set_markerfacecolor(latzone_colors[z])
+        if len(x_plotC[z][0])!= 0:
+            markerlineC, stemlinesC, baselineC = \
+                ax[1, 0].stem(x_plotC[z][0], y_plotC[z][0], linefmt='grey',
+                              bottom=y_min_plotC, use_line_collection=True,
+                              label=latzone_labels[z])
+            markerlineC.set_markerfacecolor(latzone_colors[z])
 
-    ax[1, 0].set_ylabel(y_label_plotC)
+    ax[1, 0].set_ylabel('Mass SO2 (kt)')
     ax[1, 0].xaxis.set_label_position('top')
     ax[1, 0].spines['top'].set_visible(False)
     ax[1, 0].spines['right'].set_visible(False)
@@ -199,15 +202,16 @@ def main():
     # SubplotD
     ax[1, 1].invert_yaxis()
     for z in range(num_latbins):
-        markerlineD, stemlinesD, baselineD = \
-            ax[1, 1].stem(x_plotD[z][0], y_plotD[z][0],
-                          linefmt='black',
-                          bottom=y_min_plotC,
-                          use_line_collection=True,
-                          label=latzone_labels[z])
-        markerlineD.set_markerfacecolor(latzone_colors[z])
+        if len(x_plotD[z][0])!= 0:
+            markerlineD, stemlinesD, baselineD = \
+                ax[1, 1].stem(x_plotD[z][0], y_plotD[z][0],
+                              linefmt='black',
+                              bottom=y_min_plotC,
+                              use_line_collection=True,
+                            label=latzone_labels[z])
+            markerlineD.set_markerfacecolor(latzone_colors[z])
 
-    ax[1, 1].set_ylabel(y_label_plotD)
+    ax[1, 1].set_ylabel('Clustered Mass SO2 (kt)')
     ax[1, 1].xaxis.set_label_position('top')
     ax[1, 1].spines['top'].set_visible(False)
     ax[1, 1].spines['right'].set_visible(False)
@@ -215,7 +219,7 @@ def main():
 
     # save file
     plt.show()
-    plt.savefig(args.outfile, bbox_inches='tight', dpi=500)
+    plt.savefig(outfile, bbox_inches='tight', dpi=500)
 
 
 def get_column_localfunc(file_name, query_column, query_value,
