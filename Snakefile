@@ -59,13 +59,17 @@ rule identify_volcano_size:
         '''
 
 rule create_Data4_file:
-    input: 'Data3.csv'
+    input: 'Data3.csv', 'lat_bin_edges_file.txt'
     output: 'Data4.csv'
-    shell:     #NOTE: (TODO) this will create Data4.csv with columns of: lat_bin_number, binned_mass_so2, binned_date
+    shell:
         '''
+	LAT_BIN_EDGES=$(cat {input[1]} | xargs printf "%s" | awk -F',' '{{gsub(" ","-"); print}}' | awk -F',' '{{gsub(","," "); print}}' | sed 's/[][]//g')
+
         python cluster_eruptions.py \
             --function_name 'cluster_eruptions_geotemporal' \
-            # TODO: add rest of arguments
+            --infile {input[0]} \
+	    --outfile {output} \
+	    -lat_bin_edges $LAT_BIN_EDGES
         '''
 
 rule timeseries_plots:

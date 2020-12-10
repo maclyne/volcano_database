@@ -29,6 +29,7 @@ import argparse
 from bin_utils import get_bindex
 from bin_utils import add_column_csv
 import my_utils
+import datetime
 from datetime import date
 from datetime import timedelta
 import numpy as np
@@ -65,7 +66,8 @@ def main():
         bin_by_latzone(infile, outfile, lat_column, lat_bin_edges)
     elif function_command == 'cluster_eruptions_geotemporal':
         # TODO: add to argparser for this function
-        cluster_eruptions_geotemporal(infile, outfile)  # TODO: add arguments
+        lat_bin_edges = args.lat_bin_edges
+        cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges)  # TODO: add arguments
     elif function_command == 'identify_volcano_size':
         identify_volcano_size(infile,
                               outfile,
@@ -161,8 +163,7 @@ def bin_by_latzone(infile, outfile, lat_column, lat_bin_edges):
     add_column_csv(infile, outfile, new_column_name, column_data=bindex_list)
 
 
-def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
-                                  lat_bin_edges):
+def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
     """
     clusters volcanic eruptions in each latzone by time proximity.
     The output clusters have info of latbin_zone, binned_date, binned_mass_so2
@@ -178,58 +179,76 @@ def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
                           latitude,
                           date,
                           mass_so2,
-                          latbin_zone
+                          latbin_zone,
+                          size_unit,
+                          coverage_time_years
 
     outfile : str  of filepath/filename that will be created.
                         The CSV columns will be:
                         latbin_zone, binned_date, binned_mass_so2
 
-    time_cluster_info_file : str   of filepath/filename for a CSV file that
-                                    contains the coverage_time for
-                                    volcanoes by their size
-                                    (currently by mass so2)
 
     lat_bin_edges : list of int  declaring what the latitude bin edges will be.
                             example: [-90, -60, -30, -15, 0, 15, 30, 60, 90]
+
     """
 
     # convert time to date format
-    one_year = timedelta(days=365)
+    #one_year = timedelta(days=365)
+    one_year=365
 
     # pre-allocate structure of out_data list of lists of lists
     #   out_data[0] will be lat_bin_list
     #   out_data[1] will be list of binned_date for each latbin_zone
     #   out_data[2] will be list of binned_mass_so2 for each latbin_zone
     out_data = [[], [], []]
-
+    z_used = []
     # Get volcano data
     num_latbins = len(lat_bin_edges) - 1
     lat_bin_list = range(1, num_latbins + 1)
 
     latbin_zone_column = 4  # NOTE: these column values are currently hardcoded
-    date_column = 2
+    date_column = 1
     mass_column = 3
-    volc_size_column = 4
-    volc_coverage_time_column = 5
+    volc_size_column = 5
+    volc_coverage_time_column = 6
 
     # for each latbin_zone
     for z in range(num_latbins):
-        out_data[0].append(lat_bin_list[z])
+        print(z, 'z')#NOTE:debugging
+
+        #data = my_utils.get_column(infile,
+        #                           query_column=latbin_zone_column,
+        #                           query_value=lat_bin_list[z],
+        #                           result_column=[date_column, mass_column,
+        #                                           volc_size_column,
+        #                                           volc_coverage_time_column])
+
 
         data = my_utils.get_column(infile,
                                    query_column=latbin_zone_column,
-                                   query_value=lat_bin_list[z],
-                                   result_columns=[date_column, mass_column,
+                                   query_value=str(lat_bin_list[z]),
+                                   result_column=[date_column, mass_column,
                                                    volc_size_column,
                                                    volc_coverage_time_column])
-        volc_date_list = [date.fromisoformat(i) for i in data[0]]
-        volc_mass_list = [float(i) for i in data[1]]
-        volc_size_list = [int(i) for i in data[2]]
-        volc_coverage_time_list = [float(i) for i in data[3]]
-        # NOTE: idk if Clairs version of get_column has the same input and
-        # output args order as mine
+
+        volc_date_list = [date.fromisoformat(data[i][0]) for i in range(len(data))]
+        volc_mass_list = [float(data[i][1]) for i in range(len(data))]
+        volc_size_list = [int(data[i][2]) for i in range(len(data))]
+        volc_coverage_time_list = [float(data[i][3]) for i in range(len(data))]
+        
+        print(volc_date_list, 'volc_date_list')#NOTE: debugging
+        print(volc_mass_list, 'volc_mass_list')#NOTE: debugging
+        print(volc_size_list, 'volc_size_list')#NOTE: debugging
+        print(volc_coverage_time_list, 'volc_coverage_time_list')#NOTE: debugging
+
+        # skip the current latbin_zone if the data for it is empty
+        if volc_date_list == []:
+            continue
 
         # prep lists
+        z_used.append(z)
+        out_data[0].append(lat_bin_list[z])
         binned_date_list = []
         binned_mass_list = []
 
@@ -242,28 +261,32 @@ def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
 
         # for this volc_size and coverage_time :
         while volc_size_iterator > 0:
+            print(volc_size_iterator, 'volc_size_iterator line264')
             # find first instance (in time) of volc_size
             # call that index v_ind.
             # If it cant be found, then return v_ind == -1
             # v_ind = find_first(volc_size, volc_size_list)
-            ind_finds = np.arange(len(volc_size_list))[(volc_size_list == volc_size_iterator)]
+            #ind_finds = np.arange(len(volc_size_list))[(np.array(volc_size_list) == volc_size_iterator)]
+            ind_finds = np.arange(len(volc_size_list))[(np.array(volc_size_list) == volc_size_iterator) & (volc_used_array == 0)]
             if np.size(ind_finds) == 0:
                 v_ind = -1
             else:
                 v_ind = ind_finds[0]
+            print(v_ind,'v_ind line274')#NOTE:debugging
 
-            while v_ind != -1:
+            while (v_ind != -1) & (v_ind < len(volc_date_list)-5):
+                print('entering while loop while v_ind != -1: iline 278')
                 # starting at first unused instance of v_ind
                 # at this volc_size:
                 binned_date = volc_date_list[v_ind]
                 binned_date_list.append(binned_date)
 
-                swath_end = binned_date + datetime.timedelta(days=one_year * volc_coverage_time_list[v_ind])
+                swath_end = binned_date + datetime.timedelta(days=int(one_year * volc_coverage_time_list[v_ind]))
 
                 # add this first mass to binned_mass
                 binned_mass = volc_mass_list[v_ind]
                 volc_used_array[v_ind] = 1
-
+                
                 v_ind += 1  # update to next v_ind to move forward
 
                 # while the next volcanoes are within the swath range:
@@ -284,13 +307,16 @@ def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
                 #        # if there are no unused volcanos of that volc_size,
                 #            #then iterate down to next smaller volc_size and start process again
                 while volc_date_list[v_ind] < swath_end:
+                    print('entering while loop while volc_date_list[v_ind] < swath_end: line 309')
                     if volc_used_array[v_ind] == 1:
                         v_ind += 1
+                        print(v_ind,'v_ind line 310')#NOTE:debugging
                     else:
-                        if volc_size_list[v_ind] <= volc_size_iterator - 2:
+                        if volc_size_list[v_ind] <= volc_size_iterator -1: #- 2:
                             binned_mass += volc_mass_list[v_ind]
                             volc_used_array[v_ind] = 1
                             v_ind += 1
+                            print(v_ind,'v_ind line 316')#NOTE:debugging
                         else:
                             binned_mass_list.append(binned_mass)
                             binned_date = volc_date_list[v_ind]
@@ -299,34 +325,48 @@ def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
                             swath_end = binned_date + datetime.timedelta(days=one_year * volc_coverage_time_list[v_ind])
                             volc_used_array[v_ind] = 1
                             v_ind += 1
+                            print(v_ind,'v_ind line 325')#NOTE:debugging
                 else:
+                    print('exiting while loop loop while volc_date_list[v_ind] < swath_end: line329')
                     binned_mass_list.append(binned_mass)
-
+                    print(v_ind,'v_ind line 328')#NOTE:debugging
+                    volc_used_array[v_ind] = 1
                 # find next unused instance (in time) of volc_size
                 # and call that index v_ind.
                 # If it cant be found, then return v_ind == -1
-                ind_finds = np.arange(len(volc_size_list))[(volc_size_list == volc_size_iterator) & (volc_used_array == 0)]
+                print('loop exited line 338')#NOTE:debugging
+                print('finding next unused v_ind line 334')
+                ind_finds = np.arange(len(volc_size_list))[(np.array(volc_size_list) == volc_size_iterator) & (volc_used_array == 0)]
                 if np.size(ind_finds) == 0:
                     v_ind = -1
                 else:
                     v_ind = ind_finds[0]
-
+                print(v_ind,'v_ind line 347')#NOTE:debugging
+                v_ind= v_ind
+                print(v_ind,'v_ind line 349')#NOTE:debugging
             # Once no remaining unused volcanos of this volc_size are found,
             # iterate down to next smaller volc_size
             else:
                 volc_size_iterator = volc_size_iterator - 1
+                print('else line 350')#NOTE:debugging
 
-        # append to out_data lists
+        # sort these lists by date and append to out_data lists
+        list1, list2 = zip(*sorted(zip(binned_date_list, binned_mass_list)))
+        binned_date_list, binned_mass_list = (list(t) for t in zip(*sorted(zip(list1, list2))))
         out_data[1].append([binned_date_list])
         out_data[2].append([binned_mass_list])
 
+    print(out_data,'out_data')#NOTE:debugging
     # write out_data to a CSV file in format:
     # 'latbin_zone', 'binned_date', 'binned_mass_so2'
+    print(len(out_data[0]), 'len(out_data[0])')#NOTE:debugging
+    print(z_used,'z_used')#NOTE:debugging
+    
     fout = open(outfile, 'w')
     fout.write("latbin_zone,binned_date,binned_mass_so2 \n")
     for z in range(0, len(out_data[0])):
         for d in range(0, len(out_data[1][z][0])):
-            fout.write(out_data[0][z] + ',' + str(out_data[1][z][0][d]) + ',' + str(out_data[2][z][0][d]) + '\n')
+            fout.write(str(out_data[0][z]) + ',' + str(out_data[1][z][0][d]) + ',' + str(out_data[2][z][0][d]) + '\n')
     fout.close()
 
 
