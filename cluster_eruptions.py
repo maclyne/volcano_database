@@ -61,7 +61,8 @@ def main():
     elif function_command == 'cluster_eruptions_geotemporal':
         # TODO: add to argparser for this function
         cluster_eruptions_geotemporal(infile, outfile) # TODO: add arguments
-
+    elif function_command == 'identify_volcano_size':
+        identify_volcano_size(infile, outfile, args.SO2_output_column, args.time_cluster_info_file)
     else:
         print('function not run. check function name spelling')
 
@@ -87,15 +88,25 @@ def get_args(description):
                         help='Name of the data file to be created',
                         required=True)
 
-    parser.add_argument('--lat_column',
+    parser.add_argument('-lat_column',
                         type=int,
                         help='index of latitude column in infile',
                         default=1)
 
-    parser.add_argument('--lat_bin_edges',
+    parser.add_argument('-lat_bin_edges',
                         type=int,
                         nargs='+',
                         help='list of int declaring the latitude bin edges')
+
+    parser.add_argument('-SO2_output_column',
+                        help='index of SO2_output column in infile',
+                        default=1)
+
+    parser.add_argument('-time_cluster_info_file',
+                        type=str,
+                        help='Name of the time_cluster_info CSV file')
+
+
 
     return parser
 
@@ -346,22 +357,15 @@ def identify_volcano_size(infile, outfile, SO2_output_column, time_cluster_info_
     """
 
     f = my_utils.open_file(infile)
-    ref = my_utils.open_file(time_cluster_info_file)
 
-    # skip first header line
-    next(ref)
-
-    # separates header line and removes /n
-    header_unsplit = f.readline().rstrip()
-    # splits header. The gibberish is to not split based on commas in ()
-    header = re.split(r',(?!(?:[^(]*\([^)]*\))*[^()]*\))', header_unsplit)
+    # separates header line, removes /n, and splits by comma
+    header= f.readline().rstrip().split(',')
 
     # calls the column_index function to identify the SO2_output column
     # based on either its integer or string value
-    i = []
 
-    column_index = identify_column(SO2_output_column, header)
-    i.append(column_index)
+    column_index = my_utils.identify_column(SO2_output_column, header)
+    i = column_index
 
     # create Results list to add results to
     size_unit = []
@@ -369,20 +373,28 @@ def identify_volcano_size(infile, outfile, SO2_output_column, time_cluster_info_
 
     for line in f:
         A = line.rstrip().split(',')
+        
+        # open reference file
+        ref = my_utils.open_file(time_cluster_info_file)
+        # skip first header line
+        next(ref)
+        
         for line2 in ref:
             r = line2.rstrip().split(',')
             # where SO2 mass falls within preset ranges
-            if A[i] >= r[0] and A[i] <= r[1]:
+            if int(A[i]) >= int(r[0]) and int(A[i]) <= int(r[1]):
                 size_unit.append(r[2])
                 coverage_time.append(r[3])
+                break
             else:
                 continue
+
     f.close()
     ref.close()
 
     # add columns with data to the file
-    add_column_csv(infile, out_file, 'size_unit', size_unit)
-    add_column_csv(out_file, out_file, 'coverage_time_years', coverage_time)
+    add_column_csv(infile, outfile, 'size_unit', size_unit)
+    add_column_csv(outfile, outfile, 'coverage_time_years', coverage_time)
 
 
 
