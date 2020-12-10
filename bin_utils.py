@@ -47,20 +47,22 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
     fin = open(infile, 'r')
     out_line_list = []
     # get header line and remove /n
-    in_header = fin.readline().rstrip() #NOTE: diff from BRAC_get_permit_data.py
+    # NOTE: diff from BRAC_get_permit_data.py
+    in_header = fin.readline().rstrip()
     # parse through file lines
-    for l in fin:
-        out_line_list.append(l)
+    for line in fin:
+        out_line_list.append(line)
     fin.close()
-
 
     out_dataset_file = outfile
     fout = open(out_dataset_file, 'w')
-    # write outfile header 
-    fout.write(in_header +","+ new_column_name+" \n")
+    # write outfile header
+    fout.write(in_header + "," + new_column_name + " \n")
     # print all lines of previus file but with column_data added as new column
-    for line in range(len(column_data)): #NOTE: this is diff from BRAC_get_permit_data.py
-        new_out_line_list = out_line_list[line].strip()+','+str(column_data[line])+ '\n'
+    # NOTE: this is diff from BRAC_get_permit_data.py
+    for line in range(len(column_data)):
+        new_out_line_list = out_line_list[line].strip() + ',' \
+                            + str(column_data[line]) + '\n'
         fout.write(new_out_line_list)
 
     fout.close()
@@ -68,8 +70,8 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
 
 def get_bindex(value, bin_edges_list):
     """
-    Get the index of the bin that the value should fit into from a list of bin edges.
-    Currently uses built in numpy function np.digitize
+    Get the index of the bin that the value should fit into from a list of
+    bin edges. Currently uses built in numpy function np.digitize
 
     example: get_bindex(10, [-90, -30, 0, 30, 90]) = 3
 
@@ -95,8 +97,8 @@ def get_bindex(value, bin_edges_list):
         bin_order = 'decreasing'
     else:
         print('ERROR: bin_edges_list is neither increasing or decreasing')
-        # TODO: sys.exit with exit code
-    
+        sys.exit(1)
+
     # get the bindex using np.searchsorted
     if bin_order == 'increasing':
         bindex = np.digitize(value, bin_edges_list, right=False).tolist()
@@ -104,4 +106,3 @@ def get_bindex(value, bin_edges_list):
         bindex = np.digitize(value, bin_edges_list, right=True).tolist()
 
     return bindex
-

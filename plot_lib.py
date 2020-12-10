@@ -3,7 +3,8 @@ This is almost an exact copy of ss_plots/plot_lib.py from class \
         except it returns parser instead of parser.parse_args()
 '''
 import argparse
-  
+
+
 def get_args(description):
     parser = argparse.ArgumentParser(description=description)
 
