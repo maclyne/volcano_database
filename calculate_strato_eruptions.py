@@ -52,7 +52,7 @@ def main():
                                                          args.out_file,
                                                          strato_column,
                                                          stratospheric)
-
+    print(stratospheric)
 
 if __name__ == '__main__':
     main()
