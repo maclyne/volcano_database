@@ -43,9 +43,18 @@ rule create_Data2_file:
             --lat_bin_edges $LAT_BIN_EDGES 
         '''
 
-rule create_Data3_file:
-    input: 'Data2.csv'
+rule identify_volcano_size:
+    input: 'Data2.csv', 'time_cluster_info_file.csv'
     output: 'Data3.csv'
+    shell:
+        '''
+        #TODO: update to run function identify_volcano_size(infile, outfile, SO2_output_column, time_cluster_info_file)
+        # NOTE: I dont know how to do this with a function not a script
+        '''
+
+rule create_Data4_file:
+    input: 'Data3.csv'
+    output: 'Data4.csv'
     shell:     #NOTE: (TODO) this will create Data3.csv with columns of: lat_bin_number, binned_mass_so2, binned_date
         '''
         python cluster_eruptions.py \
@@ -54,7 +63,7 @@ rule create_Data3_file:
         '''
 
 rule timeseries_plots:
-    input: 'Data2.csv', 'Data3.csv', 'volcano_sig_Thompson2009.csv'
+    input: 'Data2.csv', 'Data4.csv', 'volcano_sig_Thompson2009.csv'
     output: 'volcano_clustered_timeseries_plot.png'
     shell: 
         '''
