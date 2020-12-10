@@ -1,3 +1,13 @@
+'''
+File: extract_eruptions.py
+Author: Clair Huffine
+Date: Dec 7 2020
+
+This file extracts out columns of interest, such as volcano name, date,
+latitude, and SO2 expellation. This data is then used to create a new
+CSV file.
+'''
+
 import my_utils
 import bin_utils
 import argparse
@@ -35,9 +45,6 @@ def main():
                         required=True,
                         help='File name of CSV file to be created.')
     args = parser.parse_args()
-
-    # Step 1: Extract out columns of interest. Such as volcano, date, latitude,
-    # and SO2 expellation
 
     # extracts the desired columns for stratospheric volcanos
     volcano_data = my_utils.get_column(args.file_name,

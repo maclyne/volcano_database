@@ -11,6 +11,12 @@
 
     * fill_in_column - Opens a comma separated CSV file and fills in holes
                    in a specifiedcolumn with the string preceeding the gap.
+
+    * check_plume_height - Opens a comma separated CSV file, calculates if
+                    the value in the first query column is greater than the
+                    value in the second query column and then adds a 'y' or
+                    'n' to the outputted list
+
                    """
 
 import sys
@@ -177,17 +183,18 @@ def check_plume_height(file_name, query_columns):
     """
     Opens a comma separated CSV file, calculates if the value in
     the first query column is greater than the value in the second
-    query column and then adds a y or n to the outputted list
+    query column and then adds a 'y' or 'n' to the outputted list.
 
     Parameters
     ----------
     file_name: string
             The path to the CSV file.
+
     query_columns: integer or string
             The columns to be compared.
             NOTE: the value in the first input column is determined to be
             greater or equal to the value in the second input column.
-            Expecting only two query columns
+            Expecting only two query columns.
 
 
     Returns:

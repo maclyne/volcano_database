@@ -2,9 +2,15 @@
 
 ## Authors: Margot Clyne and Clair Huffine
 ## Created: October 28 2020
-## Last Updated: November 15 2020
+## Last Updated: December 10 2020
 
-## This project applies software engineering best practicies to the spatial and temporal binning of volcanic eruptions over the past century to better include their impact on global temperature abnormalities. 
+## This project applies software engineering best practices to the spatial and temporal binning of volcanic eruptions over the past century to better include their impact on global temperature abnormalities. 
+
+This project works with data from [ADD PAPER WHERE DATA IS SOURCED FROM]. The workflow of this project in Snakefile is pictured below:
+
+<center><img src="[add dag.png here]" width="300"/></center>
+
+First, the script calculate_strado_eruptions.py determines if the volcanoic erpuptions reached the stratosphere based on the eruption altitude (alt) and the height in km of the troposhere at the location of the volcano (tropo) and add 'y' or 'n' to the data within the original CSV file as a new column and create and outputs a new CSV file (Updated_data.csv).
 
 The script bin_eruptions.py allows for input to select the CSV file name, query column, query value, and result columns. Functions in my_utils.py are used to search through the file for a specified volcano, date, or latitude (as desired), collects the requested data from the reult columns of interest, and combines volanic output based on location and date. 
 
