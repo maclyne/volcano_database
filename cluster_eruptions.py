@@ -139,11 +139,78 @@ def bin_by_latzone(infile, outfile, lat_column, lat_bin_edges):
     add_column_csv(infile, outfile, new_column_name, column_data=bindex_list)
 
 
-def cluster_eruptions_geotemporal(infile, outfile):
+def cluster_eruptions_geotemporal(infile, outfile, time_cluster_info_file,
+                                  lat_bin_edges):
     """
+    clusters volcanic eruptions in each latzone by time proximity.
+    The output clusters have info of latbin_zone, binned_date, binned_mass_so2
+    This is all output to a CSV file.
+
+
+    Parameters:
+    ----------
+    infile : str   of filepath/filename that contains \
+                   ONLY stratospheric eruptions.
+                   CSV file has columns of: \
+                          volcano_label, \
+                          latitude, \
+                          date, \
+                          mass_so2, \
+                          latbin_zone
+
+    outfile : str  of filepath/filename that will be created.
+                        The CSV columns will be:
+                        latbin_zone, binned_date, binned_mass_so2
+
+    time_cluster_info_file : str   of filepath/filename for a CSV file that \
+                                    contains the coverage_time for \
+                                    volcanoes by their size (currently by mass so2)
+
+    lat_bin_edges : list of int     declaring what the latitude bin edges will be. 
+                                    example: [-90, -60, -30, -15, 0, 15, 30, 60, 90]
     """
-    # TODO
-    return None # NOTE: placeholder until function is coded
+    #TODO: get time_cluster_info_file data
+    
+
+
+    # TODO: assign size to each volcano
+
+
+    # Get volcano data
+    latbin_zone_column = 4
+    num_latbins = len(lat_bin_edges) -1
+    lat_bin_list = range(1, num_latbins +1)
+
+    latbin_zone_column = 4
+    date_column = 2
+    mass_column = 3
+
+    # for each latbin_zone
+    for z in range(num_latbins):
+        data = get_column(infile,
+                          query_column=latbin_zone_column,
+                          query_value=lat_bin_list[z],
+                          result_columns=[date_column, mass_column])
+        volc_date_list = [date.fromisoformat(i) for i in data[0]]
+        volc_mass_list = [float(i) for i in data[1]]
+        # NOTE: idk if Clairs version of get_column has the same input and output args order as mine
+    
+
+        # TODO: start with biggest volc_size in the time_cluster_info_file
+        volc_size = max(volc_size_keys) #NOTE: I made up these names. 
+        coverage_time = coverage_time_values(volc_size) #NOTE: I made up these names. 
+        # do something
+
+        # find first instance (in time) of volc_size
+
+        # TODO: iterate down to next smaller volc_size
+        volc_size = volc_size - 1
+
+
+
+
+
+
 
 if __name__ == '__main__':
     main()
