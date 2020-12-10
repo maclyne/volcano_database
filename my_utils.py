@@ -11,6 +11,12 @@
 
     * fill_in_column - Opens a comma separated CSV file and fills in holes
                    in a specifiedcolumn with the string preceeding the gap.
+
+    * check_plume_height - Opens a comma separated CSV file, calculates if
+                    the value in the first query column is greater than the
+                    value in the second query column and then adds a 'y' or
+                    'n' to the outputted list
+
                    """
 
 import sys
@@ -66,8 +72,9 @@ def get_column(file_name, query_column, query_value, result_column=1):
 
     Returns:
     --------
-    Output: list of intergers or list of lists of strings with multiple result column
-            inputs values in the result_column matching the query_value entry.
+    Output: list of intergers or list of lists of strings with multiple result
+            column inputs values in the result_column matching the query_value
+            entry.
     """
 
     f = open_file(file_name)
@@ -170,24 +177,33 @@ def identify_column(query_column, header):
                     sys.exit(1)
     return(index)
 
+
 def check_plume_height(file_name, query_columns):
 
-    """ TODO: Update documentation
-    Opens a comma separated CSV file and returns [ADD]
+    """
+    Opens a comma separated CSV file, calculates if the value in
+    the first query column is greater than the value in the second
+    query column and then adds a 'y' or 'n' to the outputted list.
 
     Parameters
     ----------
     file_name: string
             The path to the CSV file.
-    query_column: integer or string
-            The column to search for the query_value in.
+
+    query_columns: integer or string
+            The columns to be compared.
+            NOTE: the value in the first input column is determined to be
+            greater or equal to the value in the second input column.
+            Expecting only two query columns.
 
 
     Returns:
     --------
-    Output: 
+    greater_than_zero: list
+            list of 'y' or 'n' corresponding to if the values in the
+            query columns were greater than or equal to each other or not.
     """
-    
+
     f = open_file(file_name)
 
     # separates header line and removes /n
