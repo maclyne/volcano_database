@@ -108,6 +108,7 @@ def get_args(description):
 
     parser.add_argument('-SO2_output_column',
                         help='index of SO2_output column in infile',
+                        type=int,
                         default=1)
 
     parser.add_argument('-time_cluster_info_file',
