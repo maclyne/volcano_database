@@ -21,7 +21,7 @@ Date : Nov 8 2020
 
 * identify_volcano_size - Identifies and bins volcanos by size from
           time_cluster_info_file. The output clusters have info of
-          latbin_zone, binned_mass_so2, and coverage_time
+          latbin_zone, size_unit, and coverage_time
 
 """
 import sys
@@ -108,6 +108,7 @@ def get_args(description):
 
     parser.add_argument('-SO2_output_column',
                         help='index of SO2_output column in infile',
+                        type=int,
                         default=1)
 
     parser.add_argument('-time_cluster_info_file',
@@ -334,7 +335,7 @@ def identify_volcano_size(infile, outfile, SO2_output_column,
                           time_cluster_info_file):
     """
     Identifies and bins volcanos by size from time_cluster_info_file.
-    The output clusters have info of latbin_zone, binned_mass_so2,
+    The output clusters have info of latbin_zone, size_unit,
     and coverage_time
     This is all output to a CSV file.
     Parameters:
@@ -349,7 +350,13 @@ def identify_volcano_size(infile, outfile, SO2_output_column,
                           latbin_zone
     outfile : str  of filepath/filename that will be created.
                         The CSV columns will be:
-                        latbin_zone, binned_mass_so2, and coverage_time
+                          volcano_label,
+                          latitude,
+                          date,
+                          mass_so2,
+                          latbin_zone,
+                          size_unit,
+                          coverage_time
 
     SO2_output_column : str or int
                         The column containing the SO2 mass output
