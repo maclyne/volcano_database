@@ -8,11 +8,22 @@ before_install:
     - conda config --add channels r
     - conda create --yes -n test
     - conda activate test
-    - conda install --yes python=3.6
+    - conda install --yes python=3.8
     - conda install -y pycodestyle
-    - conda install -y numpy
+    - conda install --yes numpy
+    - conda install --yes datetime
+
 
 script:
     - python test_my_utils.py
+    - python test_bin_utils.py
     - pycodestyle my_utils.py
     - pycodestyle test_my_utils.py
+    - pycodestyle test_bin_utils.py
+    - pycodestyle bin_utils.py
+    - pycodestyle calculate_strato_eruptions.py
+    - pycodestyle cluster_eruptions.py
+    - pycodestyle extract_eruptions.py
+    - pycodestyle plot_lib.py
+    - pycodestyle plot_volcano_clusters_timeseries.py
+    - bash functional_tests.sh

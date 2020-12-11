@@ -194,8 +194,7 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
     """
 
     # convert time to date format
-    #one_year = timedelta(days=365)
-    one_year=365
+    one_year = 365
 
     # pre-allocate structure of out_data list of lists of lists
     #   out_data[0] will be lat_bin_list
@@ -215,19 +214,18 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
 
     # for each latbin_zone
     for z in range(num_latbins):
-        print(z, 'z')#NOTE:debugging
         data = my_utils.get_column(infile,
                                    query_column=latbin_zone_column,
                                    query_value=str(lat_bin_list[z]),
                                    result_column=[date_column, mass_column,
-                                                   volc_size_column,
-                                                   volc_coverage_time_column])
+                                                  volc_size_column,
+                                                  volc_coverage_time_column])
 
         volc_date_list = [date.fromisoformat(data[i][0]) for i in range(len(data))]
         volc_mass_list = [float(data[i][1]) for i in range(len(data))]
         volc_size_list = [int(data[i][2]) for i in range(len(data))]
         volc_coverage_time_list = [float(data[i][3]) for i in range(len(data))]
-        
+
         # skip the current latbin_zone if the data for it is empty
         if volc_date_list == []:
             continue
@@ -247,7 +245,6 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
 
         # for this volc_size and coverage_time :
         while volc_size_iterator > 0:
-            print(volc_size_iterator, 'volc_size_iterator line264')
             # find first instance (in time) of volc_size
             # call that index v_ind.
             # If it cant be found, then return v_ind == -1
@@ -257,8 +254,7 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
             else:
                 v_ind = ind_finds[0]
 
-            while (v_ind != -1) & (v_ind < len(volc_date_list)-5):
-                print('entering while loop while v_ind != -1: iline 278')
+            while (v_ind != -1) and (v_ind < len(volc_date_list)):
                 # starting at first unused instance of v_ind
                 # at this volc_size:
                 binned_date = volc_date_list[v_ind]
@@ -269,37 +265,49 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
                 # add this first mass to binned_mass
                 binned_mass = volc_mass_list[v_ind]
                 volc_used_array[v_ind] = 1
-                
-                v_ind += 1  # update to next v_ind to move forward
+
+                # grab any of the 3 earlier eruptions 
+                #   if theyre unused and < 14 days ago
+                binned_mass, volc_used_array = collect_14day_before(v_ind,
+                                                                    volc_used_array,
+                                                                    volc_date_list,
+                                                                    binned_date,
+                                                                    binned_mass,
+                                                                    volc_mass_list)
+                # update to next v_ind to move forward
+                v_ind += 1
 
                 # while the next volcanoes are within the swath range:
                 #    # if they have already been used, skip them.
                 #    # otherwise:
-                #        # if they are two or more unit sizes less than the current volc_size,
+                #        # if they are two or more unit sizes \
+                #        #  less than the current volc_size,
                 #            # then add their masses to the binned_mass.
-                #            # their date will be moved into the time of the binned_date
-                #        # If a volcano of the same or only one unit smaller volc_size is encountered,
+                #            # their date will be moved into \
+                #            #   the time of the binned_date
+                #        # If a volcano of the same or only one unit smaller \
+                #        #   volc_size is encountered,
                 #            # then cut short the swath there.
                 #            # save the binned_mass to list and
                 #            # and start the next binned_date
                 #            # with a new swath_end and a new binned_mass.
                 #            # (immediately save that next binned_date to list)
-                # once the while loop is done (i.e. no more unused volcanos are found within the swath range):
+                # once the while loop is done (i.e. no more unused volcanos\
+                #   are found within the swath range):
                 #    # save the binned_mass
-                #    # find the next v_ind of the next unused volcano of that volc_size
+                #    # find the next v_ind of the next unused \
+                #    #   volcano of that volc_size
                 #        # if there are no unused volcanos of that volc_size,
-                #            #then iterate down to next smaller volc_size and start process again
-                while volc_date_list[v_ind] < swath_end:
-                    print('entering while loop while volc_date_list[v_ind] < swath_end: line 309')
+                #            #then iterate down to next smaller volc_size \
+                #            #   and start process again
+                while (v_ind < len(volc_date_list)) and (volc_date_list[v_ind] < swath_end):
                     if volc_used_array[v_ind] == 1:
                         v_ind += 1
-                        print(v_ind,'v_ind line 310')#NOTE:debugging
                     else:
-                        if volc_size_list[v_ind] <= volc_size_iterator -1: #- 2:
+                        if volc_size_list[v_ind] <= volc_size_iterator - 1:
                             binned_mass += volc_mass_list[v_ind]
                             volc_used_array[v_ind] = 1
                             v_ind += 1
-                            print(v_ind,'v_ind line 316')#NOTE:debugging
                         else:
                             binned_mass_list.append(binned_mass)
                             binned_date = volc_date_list[v_ind]
@@ -308,29 +316,30 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
                             swath_end = binned_date + datetime.timedelta(days=one_year * volc_coverage_time_list[v_ind])
                             volc_used_array[v_ind] = 1
                             v_ind += 1
-                            print(v_ind,'v_ind line 325')#NOTE:debugging
                 else:
-                    print('exiting while loop loop while volc_date_list[v_ind] < swath_end: line329')
                     binned_mass_list.append(binned_mass)
-                    print(v_ind,'v_ind line 328')#NOTE:debugging
+                    if v_ind == len(volc_date_list):
+                        v_ind -= 1
                     volc_used_array[v_ind] = 1
                 # find next unused instance (in time) of volc_size
                 # and call that index v_ind.
                 # If it cant be found, then return v_ind == -1
-                print('loop exited line 338')#NOTE:debugging
-                print('finding next unused v_ind line 334')
                 ind_finds = np.arange(len(volc_size_list))[(np.array(volc_size_list) == volc_size_iterator) & (volc_used_array == 0)]
                 if np.size(ind_finds) == 0:
                     v_ind = -1
                 else:
                     v_ind = ind_finds[0]
-                print(v_ind,'v_ind line 347')#NOTE:debugging
-                v_ind= v_ind
+                binned_mass, volc_used_array = collect_14day_before(v_ind,
+                                                                    volc_used_array,
+                                                                    volc_date_list,
+                                                                    binned_date,
+                                                                    binned_mass,
+                                                                    volc_mass_list)
+                v_ind = v_ind
             # Once no remaining unused volcanos of this volc_size are found,
             # iterate down to next smaller volc_size
             else:
                 volc_size_iterator = volc_size_iterator - 1
-                print('else line 350')#NOTE:debugging
 
         # sort these lists by date and append to out_data lists
         list1, list2 = zip(*sorted(zip(binned_date_list, binned_mass_list)))
@@ -340,13 +349,34 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
 
     # write out_data to a CSV file in format:
     # 'latbin_zone', 'binned_date', 'binned_mass_so2'
-    
+
     fout = open(outfile, 'w')
     fout.write("latbin_zone,binned_date,binned_mass_so2 \n")
     for z in range(0, len(out_data[0])):
         for d in range(0, len(out_data[1][z][0])):
             fout.write(str(out_data[0][z]) + ',' + str(out_data[1][z][0][d]) + ',' + str(out_data[2][z][0][d]) + '\n')
     fout.close()
+
+
+def collect_14day_before(v_ind, volc_used_array, volc_date_list,
+                         binned_date, binned_mass, volc_mass_list):
+    '''
+    Check to see if any of the 3 (smaller) volcanos beforehand \
+    are unused and erupted within 2 weeks of this. \
+    For any that did, add their masses to binned_mass \
+    and count them as used.
+
+    NOTE: this is inly meant to be used as a helper function within \
+            cluster_eruptions_geotemporal(), not a standalone funciton.
+    '''
+    for i in range(1, 4):
+        v_ind_previous = v_ind - i
+        if (v_ind_previous >= 0) and (volc_used_array[v_ind_previous] != 1):
+            if volc_date_list[v_ind_previous] > binned_date - datetime.timedelta(days=15):
+                binned_mass += volc_mass_list[v_ind_previous]
+                volc_used_array[v_ind_previous] = 1
+
+    return binned_mass, volc_used_array
 
 
 def identify_volcano_size(infile, outfile, SO2_output_column,

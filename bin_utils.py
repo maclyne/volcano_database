@@ -47,7 +47,6 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
     fin = open(infile, 'r')
     out_line_list = []
     # get header line and remove /n
-    # NOTE: diff from BRAC_get_permit_data.py
     in_header = fin.readline().rstrip()
     # parse through file lines
     for line in fin:
@@ -59,7 +58,6 @@ def add_column_csv(infile, outfile, new_column_name, column_data):
     # write outfile header
     fout.write(in_header + "," + new_column_name + " \n")
     # print all lines of previus file but with column_data added as new column
-    # NOTE: this is diff from BRAC_get_permit_data.py
     for line in range(len(column_data)):
         new_out_line_list = out_line_list[line].strip() + ',' \
                             + str(column_data[line]) + '\n'
