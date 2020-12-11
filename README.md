@@ -22,7 +22,7 @@ Once you have cloned the repository, run the following command to install the co
 ```sh
 conda env create -f environment.yml
 ```
-
+## Workflow
 
 This project works with data from [Carn et.al 2016](https://www.sciencedirect.com/science/article/pii/S0377027316000032). The workflow of this project in Snakefile is pictured below:
 
