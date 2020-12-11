@@ -9,12 +9,24 @@
 
 [ADD INFORMATION ON THE IMPORTANCE OF THIS PROJECT]
 
-<center><img src="[add final plots here]" width="300"/></center>
+## Installation
+
+Open a terminal and navigate to the desired working directory and run the code below to download this repository's code. 
+
+```sh
+git clone https://github.com/maclyne/volcano_database
+```
+Once you have cloned the repository, run the following command to install the conda environment and all program dependencies.
+```sh
+conda env create -f environment.yml
+```
+
+<center><img src="dag.png" width="300"/></center>
 
 
 This project works with data from [Carn et.al 2016](https://www.sciencedirect.com/science/article/pii/S0377027316000032). The workflow of this project in Snakefile is pictured below:
 
-<center><img src="[add dag.png here]" width="300"/></center>
+<center><img src="volcano_clustered_timeseries_plotv2.png" width="600"/></center>
 
 1. The script **calculate_strato_eruptions.py** determined if the volcanoic erpuptions reached the stratosphere based on the eruption altitude (alt) and the height in km of the troposhere at the location of the volcano (tropo) and added 'y' or 'n' to the data within the original CSV file as a new column and created and outputted a new CSV file (Updated_data.csv).
 
@@ -65,8 +77,15 @@ This project works with data from [Carn et.al 2016](https://www.sciencedirect.co
         - bin_utils.add_column_csv
 
 
-5. The function **cluster_eruptions_geotemporal** in the script **cluster_eruptions.py** allows for input to select the CSV file, the output file name, [TODO: UPDATE once completed]
+5. The function **cluster_eruptions_geotemporal** in the script **cluster_eruptions.py** clusters volcanic eruptions in each latzone by time proximity.
 
+    - Inputs:
+        - ***--infile*** 'Name of the input data CSV file'
+        - ***--outfile*** 'File name of CSV file to be created.'
+        - ***-lat_bin_edges*** 'list of int declaring the latitude bin edges. example: [-90, -60, -30, -15, 0, 15, 30, 60, 90]'
+    - Functions used:
+        - cluster_eruptions.cluster_eruptions_geotemporal
+        - my_utils.get_column
 
 
 6. The script **plot_volcano_clustered_timeseries_plot.png** creates four subplots:
@@ -113,6 +132,9 @@ This project works with data from [Carn et.al 2016](https://www.sciencedirect.co
 
 
 Tests can be viewed through the execution of the shells
+```sh 
+bash functional_test.sh
 ```
-$bash test_extract_eruptions.sh
+```sh
+python test_my_utils.py
 ```

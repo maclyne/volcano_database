@@ -229,11 +229,5 @@ def check_plume_height(file_name, query_columns):
         else:
             greater_than_zero.append('n')
 
-    # exception for query_value not found
-    if len(greater_than_zero) == 0:
-        print(query_value + ' was not located in the column '
-              + str(query_column))
-        sys.exit(1)
-
     f.close()
     return(greater_than_zero)

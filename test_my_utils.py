@@ -7,13 +7,6 @@ from array import array
 def main():
     unittest.main()
 
-class TestCheckPlumeHeight(unittest.TestCase):
-    def test_sucessfulsubtraction(self):
-        output = my_utils.check_plume_height('data_testset.csv', ['cases', 'deaths'])
-        self.assertEqual(output[0:3], ['y', 'y', 'y'])
-    def test_sucessfulsubtraction(self):
-        output = my_utils.check_plume_height('carn_MSVOLSO2L4_forclassproject.csv', ['alt', 'tropo'])
-        self.assertEqual(output[0:4], ['y', 'y', 'y', 'n'])
 
 class TestGetColumn(unittest.TestCase):
     def test_stringinput(self):
@@ -95,9 +88,18 @@ class TestGetColumn(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
         # query value not in data set
-        with self.assertRaises(SystemExit) as cm:
-            my_utils.get_column('data_testset.csv', 2, 'Fort Collins', 'cases')
-        self.assertEqual(cm.exception.code, 1)
+        output = my_utils.get_column('data_testset.csv', 2, 'Fort Collins', 'cases')
+        self.assertEqual(output, [])
+
+class TestCheckPlumeHeight(unittest.TestCase):
+    def test_datatestset(self):
+        output = my_utils.check_plume_height('data_testset.csv', ['cases', 'deaths'])
+        self.assertEqual(output[0:3], ['y', 'y', 'y'])
+
+    def test_volcanodataset(self):
+        output = my_utils.check_plume_height('carn_MSVOLSO2L4_forclassproject.csv', ['alt', 'tropo'])
+        self.assertEqual(output[0:4], ['y', 'y', 'y', 'n'])
+
 
 if __name__ == '__main__':
     main()
