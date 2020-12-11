@@ -73,12 +73,13 @@ rule create_Data4_file:
         '''
 
 rule timeseries_plots:
-    input: 'Data2.csv', 'Data4.csv', 'Thompson2009_classproject.csv'
+    input: 'Data2.csv', 'Data4.csv', 'Thompson2009_classproject.csv', 'lat_bin_edges_file.txt'
     output: 'volcano_clustered_timeseries_plot.png'
     shell: 
         '''
+        LAT_BIN_EDGES=$(cat {input[3]} | xargs printf "%s" | awk -F',' '{{gsub(" ","-"); print}}' | awk -F',' '{{gsub(","," "); print}}' | sed 's/[][]//g')
         python plot_volcano_clusters_timeseries.py \
-            --in_file 'Thompson2009_classproject.csv' \
+            --in_file {input[2]} \
             --out_file {output} \
             --x_label 'Date' \
             --y_label 'Volcano fit anomoly of global mean SST' \
@@ -86,11 +87,11 @@ rule timeseries_plots:
             --width 15 \
             --title 'Stratospheric Volcanic Eruptions' \
             --label_plotA 'Thompson 2009' \
-            --x_column_list 1 1 1 1 \ 
+            --x_column_list 1 1 1 1 \
             --y_column_list 0 0 3 2 \
             --lat_bin_edges $LAT_BIN_EDGES \
-            --in_file_plotC 'Data2.csv' \
+            --in_file_plotC {input[0]} \
             --latbins_column_list 4 0 \
-            --in_file_plotD 'Data4.csv'
+            --in_file_plotD {input[1]}
         '''
 
