@@ -32,9 +32,10 @@ import plot_lib
 import datetime
 from datetime import date
 from datetime import timedelta
-matplotlib.use('Agg')
 import pylab
 from pylab import rcParams
+matplotlib.use('Agg')
+
 
 def main():
     parser = plot_lib.get_args('Make a volcano cluster timeseries plots.')
@@ -114,7 +115,8 @@ def main():
     num_latbins = len(lat_bin_edges) - 1
     latzone_labels = []
     for z in range(1, num_latbins + 1):
-        latzone_labels.append('latzone' + str(z) + ' [' + str(lat_bin_edges[z-1])
+        latzone_labels.append('latzone' + str(z)
+                              + ' [' + str(lat_bin_edges[z-1])
                               + ',' + str(lat_bin_edges[z]) + ')')
 
     lat_bin_list = range(1, num_latbins + 1)
@@ -140,7 +142,7 @@ def main():
 
     x_plotA = [date.fromisoformat(i) for i in x_plotA]
     y_plotA = [float(i) for i in y_plotA]
-    
+
     # plot c data
     x_plotC = []
     y_plotC = []
@@ -156,7 +158,7 @@ def main():
         x_plotC.append([data[0]])
         y_plotC.append([data[1]])
         names_C.append([data[2]])
-    
+
     # plot D data
     x_plotD = []
     y_plotD = []
@@ -171,16 +173,16 @@ def main():
         y_plotD.append([data[1]])
 
     # x-axis limits: make them same for all plots.
-    #    # Have them based on the min and max data of the plotC data 
+    #    # Have them based on the min and max data of the plotC data
     #    # (padded by a year on each side)
     x_mins = []
     x_maxs = []
     y_maxs = []
     for z in range(num_latbins):
-        if len(x_plotC[z][0])!= 0:
+        if len(x_plotC[z][0]) != 0:
             x_mins.append(np.min(x_plotC[z][0]))
             x_maxs.append(np.max(x_plotC[z][0]))
-        if len(x_plotD[z][0])!= 0:
+        if len(x_plotD[z][0]) != 0:
             y_maxs.append(np.max(y_plotD[z][0]))
 
     x_min = np.min(x_mins) - datetime.timedelta(days=365)
@@ -206,33 +208,33 @@ def main():
     y_min_plotC = 0
     ax[1, 0].invert_yaxis()
     for z in range(num_latbins):
-        if len(x_plotC[z][0])!= 0:
+        if len(x_plotC[z][0]) != 0:
             markerlineC, stemlinesC, baselineC = \
                 ax[1, 0].stem(x_plotC[z][0], y_plotC[z][0], linefmt='grey',
                               bottom=y_min_plotC, use_line_collection=True,
                               label=latzone_labels[z])
             markerlineC.set_markerfacecolor(latzone_colors[z])
             for i in range(len(x_plotC[z][0])):
-                ax[1,0].text(x_plotC[z][0][i],y_max,names_C[z][0][i],
-                             rotation=45,fontsize=3)            
-    
-    ax[1, 0].set_ylim([y_max,y_min_plotC])
+                ax[1, 0].text(x_plotC[z][0][i], y_max, names_C[z][0][i],
+                              rotation=45, fontsize=3)
+
+    ax[1, 0].set_ylim([y_max, y_min_plotC])
     ax[1, 0].set_ylabel('Mass SO2 (kt)')
     ax[1, 0].xaxis.set_label_position('top')
 
     # SubplotD
     ax[1, 1].invert_yaxis()
     for z in range(num_latbins):
-        if len(x_plotD[z][0])!= 0:
+        if len(x_plotD[z][0]) != 0:
             markerlineD, stemlinesD, baselineD = \
                 ax[1, 1].stem(x_plotD[z][0], y_plotD[z][0],
                               linefmt='black',
                               bottom=y_min_plotC,
                               use_line_collection=True,
-                            label=latzone_labels[z])
+                              label=latzone_labels[z])
             markerlineD.set_markerfacecolor(latzone_colors[z])
 
-    ax[1, 1].set_ylim([y_max,y_min_plotC])
+    ax[1, 1].set_ylim([y_max, y_min_plotC])
     ax[1, 1].set_ylabel('Clustered Mass SO2 (kt)')
     ax[1, 1].xaxis.set_label_position('top')
 

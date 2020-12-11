@@ -4,6 +4,6 @@ channels:
     - conda-forge
 dependencies:
     - numpy=1.19.1
-    - python=3.6
+    - python=3.8
     - matplotlib
     - snakemake

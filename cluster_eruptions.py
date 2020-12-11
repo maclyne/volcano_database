@@ -194,8 +194,7 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
     """
 
     # convert time to date format
-    #one_year = timedelta(days=365)
-    one_year=365
+    one_year = 365
 
     # pre-allocate structure of out_data list of lists of lists
     #   out_data[0] will be lat_bin_list
@@ -219,14 +218,14 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
                                    query_column=latbin_zone_column,
                                    query_value=str(lat_bin_list[z]),
                                    result_column=[date_column, mass_column,
-                                                   volc_size_column,
-                                                   volc_coverage_time_column])
+                                                  volc_size_column,
+                                                  volc_coverage_time_column])
 
         volc_date_list = [date.fromisoformat(data[i][0]) for i in range(len(data))]
         volc_mass_list = [float(data[i][1]) for i in range(len(data))]
         volc_size_list = [int(data[i][2]) for i in range(len(data))]
         volc_coverage_time_list = [float(data[i][3]) for i in range(len(data))]
-        
+
         # skip the current latbin_zone if the data for it is empty
         if volc_date_list == []:
             continue
@@ -266,8 +265,9 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
                 # add this first mass to binned_mass
                 binned_mass = volc_mass_list[v_ind]
                 volc_used_array[v_ind] = 1
-                
-                # grab any of the 3 earlier eruptions if theyre unused and < 14 days ago
+
+                # grab any of the 3 earlier eruptions 
+                #   if theyre unused and < 14 days ago
                 binned_mass, volc_used_array = collect_14day_before(v_ind,
                                                                     volc_used_array,
                                                                     volc_date_list,
@@ -280,25 +280,31 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
                 # while the next volcanoes are within the swath range:
                 #    # if they have already been used, skip them.
                 #    # otherwise:
-                #        # if they are two or more unit sizes less than the current volc_size,
+                #        # if they are two or more unit sizes \
+                #        #  less than the current volc_size,
                 #            # then add their masses to the binned_mass.
-                #            # their date will be moved into the time of the binned_date
-                #        # If a volcano of the same or only one unit smaller volc_size is encountered,
+                #            # their date will be moved into \
+                #            #   the time of the binned_date
+                #        # If a volcano of the same or only one unit smaller \
+                #        #   volc_size is encountered,
                 #            # then cut short the swath there.
                 #            # save the binned_mass to list and
                 #            # and start the next binned_date
                 #            # with a new swath_end and a new binned_mass.
                 #            # (immediately save that next binned_date to list)
-                # once the while loop is done (i.e. no more unused volcanos are found within the swath range):
+                # once the while loop is done (i.e. no more unused volcanos\
+                #   are found within the swath range):
                 #    # save the binned_mass
-                #    # find the next v_ind of the next unused volcano of that volc_size
+                #    # find the next v_ind of the next unused \
+                #    #   volcano of that volc_size
                 #        # if there are no unused volcanos of that volc_size,
-                #            #then iterate down to next smaller volc_size and start process again
+                #            #then iterate down to next smaller volc_size \
+                #            #   and start process again
                 while (v_ind < len(volc_date_list)) and (volc_date_list[v_ind] < swath_end):
                     if volc_used_array[v_ind] == 1:
                         v_ind += 1
                     else:
-                        if volc_size_list[v_ind] <= volc_size_iterator -1: #- 2:
+                        if volc_size_list[v_ind] <= volc_size_iterator - 1:
                             binned_mass += volc_mass_list[v_ind]
                             volc_used_array[v_ind] = 1
                             v_ind += 1
@@ -329,7 +335,7 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
                                                                     binned_date,
                                                                     binned_mass,
                                                                     volc_mass_list)
-                v_ind= v_ind
+                v_ind = v_ind
             # Once no remaining unused volcanos of this volc_size are found,
             # iterate down to next smaller volc_size
             else:
@@ -343,7 +349,7 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
 
     # write out_data to a CSV file in format:
     # 'latbin_zone', 'binned_date', 'binned_mass_so2'
-    
+
     fout = open(outfile, 'w')
     fout.write("latbin_zone,binned_date,binned_mass_so2 \n")
     for z in range(0, len(out_data[0])):
@@ -352,8 +358,8 @@ def cluster_eruptions_geotemporal(infile, outfile, lat_bin_edges):
     fout.close()
 
 
-
-def collect_14day_before(v_ind, volc_used_array, volc_date_list, binned_date, binned_mass, volc_mass_list):
+def collect_14day_before(v_ind, volc_used_array, volc_date_list,
+                         binned_date, binned_mass, volc_mass_list):
     '''
     Check to see if any of the 3 (smaller) volcanos beforehand \
     are unused and erupted within 2 weeks of this. \
@@ -363,7 +369,7 @@ def collect_14day_before(v_ind, volc_used_array, volc_date_list, binned_date, bi
     NOTE: this is inly meant to be used as a helper function within \
             cluster_eruptions_geotemporal(), not a standalone funciton.
     '''
-    for i in range(1,4):
+    for i in range(1, 4):
         v_ind_previous = v_ind - i
         if (v_ind_previous >= 0) and (volc_used_array[v_ind_previous] != 1):
             if volc_date_list[v_ind_previous] > binned_date - datetime.timedelta(days=15):

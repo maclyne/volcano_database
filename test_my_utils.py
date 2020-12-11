@@ -44,22 +44,27 @@ class TestGetColumn(unittest.TestCase):
 
     def test_VolcanoDataSet(self):
         # simple one line desired
-        output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
-                                     'Calbuco', ['Latitude', 'Longitude'])
+        out = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv',
+                                  'Volcano',
+                                  'Calbuco', ['Latitude', 'Longitude'])
         correct = ['-41.326', '-72.614']
-        self.assertListEqual(output[0],correct)
-        
+        self.assertListEqual(out[0], correct)
+
         # find data past extra ',' in headerline
-        output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
-                                     'Calbuco', 'Vent altitude (m a.s.l.)')
+        out = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv',
+                                  'Volcano',
+                                  'Calbuco', 'Vent altitude (m a.s.l.)')
         correct = [2003, 2003]
-        self.assertListEqual(output,correct)
-        
+        self.assertListEqual(out, correct)
+
         # multiple eruptions wanted and multiple results
-        output = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv', 'Volcano',
-                                     'Calbuco', ['Date start (UTC)','Vent altitude (m a.s.l.)'])
+        out = my_utils.get_column('Aubry_2017_Table_S2_database_volcano_parameters.csv',
+                                  'Volcano',
+                                  'Calbuco',
+                                  ['Date start (UTC)',
+                                   'Vent altitude (m a.s.l.)'])
         correct = [['4/22/2015 21:04', '2003'], ['4/23/2015 3:54', '2003']]
-        self.assertListEqual(output,correct)
+        self.assertListEqual(out, correct)
 
     def test_ErrorModes(self):
         # file not found
@@ -88,17 +93,21 @@ class TestGetColumn(unittest.TestCase):
         self.assertEqual(cm.exception.code, 1)
 
         # query value not in data set
-        output = my_utils.get_column('data_testset.csv', 2, 'Fort Collins', 'cases')
+        output = my_utils.get_column('data_testset.csv', 2,
+                                     'Fort Collins', 'cases')
         self.assertEqual(output, [])
+
 
 class TestCheckPlumeHeight(unittest.TestCase):
     def test_datatestset(self):
-        output = my_utils.check_plume_height('data_testset.csv', ['cases', 'deaths'])
+        output = my_utils.check_plume_height('data_testset.csv',
+                                             ['cases', 'deaths'])
         self.assertEqual(output[0:3], ['y', 'y', 'y'])
 
     def test_volcanodataset(self):
-        output = my_utils.check_plume_height('carn_MSVOLSO2L4_forclassproject.csv', ['alt', 'tropo'])
-        self.assertEqual(output[0:4], ['y', 'y', 'y', 'n'])
+        out = my_utils.check_plume_height('carn_MSVOLSO2L4_forclassproject.csv',
+                                          ['alt', 'tropo'])
+        self.assertEqual(out[0:4], ['y', 'y', 'y', 'n'])
 
 
 if __name__ == '__main__':

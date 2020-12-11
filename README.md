@@ -7,9 +7,12 @@
 ## This project applies software engineering best practices to the spatial and temporal binning of volcanic eruptions over the past century to better include their impact on global temperature abnormalities. 
 
 
-[ADD INFORMATION ON THE IMPORTANCE OF THIS PROJECT]
+This is the final plot we have made as a result. The upper plots are the estimated volcanic global cooling anomoly from Thompson et al., (2009) doi:10.1175/2009JCLI3089.1 data courtosy of M. Sigl (personal communication). The lower left plot is of stratospheric volcanic injections of SO2, as measured via satelites (MSVOLSO2L4 via Carn et al 2016). The dataset can be found at https://disc.gsfc.nasa.gov/datasets/MSVOLSO2L4_3/summary 
+The lower right plot is the result of clustering stratospheric volcanic injections of SO2 geotemporally via this algorithm.  
 
-<center><img src="volcano_clustered_timeseries_plotv2.png" width="600"/></center>
+<center><img src="volcano_clustered_timeseries_plot.png" width="600"/></center>
+
+Note: this bottom right plot represents a possible outcome. In this project we have bult a program that when given accurate information can make a more accurate clustering plot. The scientific information to change is the contentes of the file time_cluster_info_file.csv . The ranges of SO2 masses and the estimated coverage time of the volcanic cloud/forcing is currently a guess. With further research, these values should be updated.
 
 ## Installation
 
@@ -86,7 +89,33 @@ This project works with data from [Carn et.al 2016](https://www.sciencedirect.co
     - Functions used:
         - cluster_eruptions.cluster_eruptions_geotemporal
         - my_utils.get_column
+    - How it works:
+        For each latzone that has eruptions:
+        Start with the largest eruption size that occured.
+        Find the first (i.e. in time) occurance (call it v_ind).
+        Make this the binned_date, and start a binned mass with this mass of so2.
+        Figure out the date that the coverage time should end (call it swath_end) based on the coverage time of a volcano of this size.
+        Grab any of the 3 earlier eruptions (which would be smaller) if they are unused and < 14 days ago, and add their masses to the binned_mass.
 
+        Update to next v_ind to move forward.
+        While the next volcanoes are within the swath range:
+        - if they have already been used:
+        - skip them.
+        - otherwise:
+            - if they are one or more unit sizes less than the current volc_size,
+                - then add their masses to the binned_mass.
+                - their date will be moved into the time of the binned_date
+            - If a volcano of the same or only one unit smaller volc_size is encountered,
+                - then cut short the swath there.
+                - save the binned_mass to list and
+                - and start the next binned_date
+                - with a new swath_end and a new binned_mass.
+                - (immediately save that next binned_date to list)
+        Once the while loop is done (i.e. no more unused volcanos are found within the swath range):
+        - save the binned_mass
+        - find the next v_ind of the next unused volcano of that volc_size
+        - if there are no unused volcanos of that volc_size:
+        - then iterate down to next smaller volc_size and start process again
 
 6. The script **plot_volcano_clustered_timeseries.py** creates four subplots:
 
@@ -137,4 +166,7 @@ bash functional_test.sh
 ```
 ```sh
 python test_my_utils.py
+```
+```sh 
+python test_bin_utils.py
 ```
