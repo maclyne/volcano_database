@@ -9,6 +9,8 @@
 
 [ADD INFORMATION ON THE IMPORTANCE OF THIS PROJECT]
 
+<center><img src="volcano_clustered_timeseries_plotv2.png" width="600"/></center>
+
 ## Installation
 
 Open a terminal and navigate to the desired working directory and run the code below to download this repository's code. 
@@ -21,12 +23,10 @@ Once you have cloned the repository, run the following command to install the co
 conda env create -f environment.yml
 ```
 
-<center><img src="dag.png" width="300"/></center>
-
 
 This project works with data from [Carn et.al 2016](https://www.sciencedirect.com/science/article/pii/S0377027316000032). The workflow of this project in Snakefile is pictured below:
 
-<center><img src="volcano_clustered_timeseries_plotv2.png" width="600"/></center>
+<center><img src="dag.png" width="300"/></center>
 
 1. The script **calculate_strato_eruptions.py** determined if the volcanoic erpuptions reached the stratosphere based on the eruption altitude (alt) and the height in km of the troposhere at the location of the volcano (tropo) and added 'y' or 'n' to the data within the original CSV file as a new column and created and outputted a new CSV file (Updated_data.csv).
 
