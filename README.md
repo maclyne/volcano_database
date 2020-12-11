@@ -88,7 +88,7 @@ This project works with data from [Carn et.al 2016](https://www.sciencedirect.co
         - my_utils.get_column
 
 
-6. The script **plot_volcano_clustered_timeseries_plot.png** creates four subplots:
+6. The script **plot_volcano_clustered_timeseries.py** creates four subplots:
 
     - subplot(0,0) and subplot (0,1) will be the same. (Plot A)
     - subplot(1,0) and subplot (1,1) will be (Plot C) and (Plot D)
